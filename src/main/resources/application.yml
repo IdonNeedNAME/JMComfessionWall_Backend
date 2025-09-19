@@ -1,0 +1,10 @@
+spring:
+  application:
+    name:JMComfessionWall_Backend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/biaobaiqiang?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf-8
+    username: root
+    password: 123456
+server:
+  port: 8080

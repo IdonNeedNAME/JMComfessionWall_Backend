@@ -1,8 +1,8 @@
 package com.github.idonneedname.jmcomfessionwall_backend.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
+import com.github.idonneedname.jmcomfessionwall_backend.entity.Picture;
 
 @org.apache.ibatis.annotations.Mapper
-public interface UserMapper extends BaseMapper<User> {
+public interface PictureMapper extends BaseMapper<Picture> {
 }

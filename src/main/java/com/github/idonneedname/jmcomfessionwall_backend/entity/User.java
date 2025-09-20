@@ -1,6 +1,7 @@
 package com.github.idonneedname.jmcomfessionwall_backend.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -28,6 +29,7 @@ public class User {
     public String name;
     public int type;
     public String blacklist;
+    @JsonIgnore
     public int pictureref;//头像的id
     @TableField(exist=false)
     public ArrayList<ArrayList<Integer>> portrait;//头像的像素信息

@@ -23,6 +23,7 @@ public class PictureHelper {
     StringHelper strHelper;
     public ArrayList<ArrayList<Integer>> getPixels(int id)//获取图片像素
     {
+        if(id==-1) return null;
         strHelper.log(id);
         QueryWrapper<Picture> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id", id);

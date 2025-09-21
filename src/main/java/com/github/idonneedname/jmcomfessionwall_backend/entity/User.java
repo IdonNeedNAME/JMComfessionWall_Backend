@@ -2,6 +2,7 @@ package com.github.idonneedname.jmcomfessionwall_backend.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 @Builder
 @AllArgsConstructor
 public class User {
+    public User()
+    {}
     public User(int id,String username, String password, String name, int type, String blacklist, int pictureref) {
         this.id = id;
         this.username = username;
@@ -28,9 +31,14 @@ public class User {
     public String password;
     public String name;
     public int type;
+    @JsonIgnore
     public String blacklist;
+    @TableField(exist=false)
+    @JsonProperty("blacklist")
+    public ArrayList<Integer> _blacklist;//这是用于响应体的字段
     @JsonIgnore
     public int pictureref;//头像的id
     @TableField(exist=false)
-    public ArrayList<ArrayList<Integer>> portrait;//头像的像素信息
+    public  Picture portrait;//头像信息
+
 }

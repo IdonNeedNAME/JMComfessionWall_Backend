@@ -5,12 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+
 @Service
 @Slf4j
 public class ArrayNodeHelper {
     public static int idInArray(String array,int id)//判断数组中是否含有某个数，并返回位置
     {
-        JsonNode jsonNode=ArrayNodeHelper.Translate(array);
+        JsonNode jsonNode=ArrayNodeHelper.translate(array);
         if(jsonNode==null)
             return -1;
         if(jsonNode.isArray())
@@ -34,7 +37,7 @@ public class ArrayNodeHelper {
     {
         if(array==null)
             array="[]";
-        JsonNode jsonNode=ArrayNodeHelper.Translate(array);
+        JsonNode jsonNode=ArrayNodeHelper.translate(array);
         if(jsonNode==null)
             return null;
         if(jsonNode.isArray()) {
@@ -45,7 +48,7 @@ public class ArrayNodeHelper {
         else
             return null;
     }
-    public static JsonNode Translate(String node)//把字符串翻译成JsonNode
+    public static JsonNode translate(String node)//把字符串翻译成JsonNode
     {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode;
@@ -59,13 +62,26 @@ public class ArrayNodeHelper {
     }
     public static String delete(String node,int id)//删除某个值
     {
-        JsonNode jsonNode=ArrayNodeHelper.Translate(node);
+        JsonNode jsonNode=ArrayNodeHelper.translate(node);
         ArrayNode arrayNode = (ArrayNode) jsonNode;
         if(arrayNode==null) return node;
         int position=idInArray(arrayNode,id);
         if(position==-1) return node;
         arrayNode.remove(position);
         return arrayNode.toString();
+    }
+    public static ArrayList<Integer> translateToArray(String node)
+    {
+        JsonNode jsonNode=translate(node);
+        if(jsonNode==null) return null;
+        if(!jsonNode.isArray()) return null;
+        ArrayNode arrayNode = (ArrayNode) jsonNode;
+        ArrayList<Integer> list=new ArrayList<>();
+        for(int i=0;i<arrayNode.size();i++)
+        {
+            list.add(arrayNode.get(i).asInt());
+        }
+        return list;
     }
 
 }

@@ -2,12 +2,14 @@ package com.github.idonneedname.jmcomfessionwall_backend.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.idonneedname.jmcomfessionwall_backend.entity.AdminWhiteList;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Picture;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.ApiKeyHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.ArrayNodeHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.PictureHelper;
+import com.github.idonneedname.jmcomfessionwall_backend.mapper.AdminWhiteListMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PictureMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.UserMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.request.LoginRequest;
@@ -29,6 +31,8 @@ public class UserServiceImpl implements UserService {
     private final PictureHelper pictureHelper;
     @Resource
     private final PictureMapper pictureMapper;
+    @Resource
+    private final AdminWhiteListMapper  adminWhiteListMapper;
     public AjaxResult<User> login(LoginRequest req){
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("username",req.getUsername()).eq("password",req.getPassword());
@@ -77,14 +81,22 @@ public class UserServiceImpl implements UserService {
             return false;
     }
     public boolean isTypeValid(RegisterRequest req){
-        return true;//这方面还要再设计一下，先放个方法在这里
+        if(req.type==1)
+            return true;
+        QueryWrapper<AdminWhiteList> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("username",req.username);
+        AdminWhiteList adminWhiteList = adminWhiteListMapper.selectOne(queryWrapper);
+        if(adminWhiteList==null)
+            return false;
+        else
+            return true;
     }
     public AjaxResult<String>  register(RegisterRequest req){
            if(isUserNameValid(req.getUsername()))
            {
                if(isPassWordValid(req.getPassword()))
                {
-                   if(isTypeValid(req))
+                   if(isTypeValid(req))//判断是否可以是管理员，普通成员直接true
                    {
                         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
                         queryWrapper.eq("username",req.getUsername());
@@ -103,6 +115,8 @@ public class UserServiceImpl implements UserService {
                         userMapper.insert(user);
                         return AjaxResult.success(null);
                    }
+                   else
+                       throw new ApiException(NOT_BELONG_TO_ADMIN);
                }
                else
                    throw new ApiException(INVALID_PASSWORD);

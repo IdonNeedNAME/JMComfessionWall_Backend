@@ -16,6 +16,7 @@ public enum ExceptionEnum {
     PERMISSION_NOT_ALLOWED(1004, "权限不足"),
     NAME_TAKEN(1005, "用户名已被占用"),
     USERNAME_TOO_LONG(1006, "用户名过长"),
+    NOT_BELONG_TO_ADMIN(1007, "不在管理员白名单内"),
 
     //post类错误
     POST_NOT_FOUND(1002, "资源不存在"),

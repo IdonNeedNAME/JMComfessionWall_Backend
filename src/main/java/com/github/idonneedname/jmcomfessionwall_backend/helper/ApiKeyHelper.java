@@ -7,9 +7,15 @@ import static java.lang.Math.sin;
 
 public class ApiKeyHelper {
     public static boolean isVaildApiKey(int id,String apiKey){
-        return true;
-    }
-    private static HashMap<Integer,String> apiDictionary;
+        String api=apiDictionary.get(id);
+        if(api==null)
+            return false;//说明这个id没有登记
+        if(api.equals(apiKey))
+            return true;
+        else
+            return false;
+    }//判断前端返回的apikey是否合法
+    private static HashMap<Integer,String> apiDictionary;//登记api的静态字段
     public static String genApiKey(int id)
     {
         int random=(int)(Math.random()*100);
@@ -17,7 +23,7 @@ public class ApiKeyHelper {
         num*=1000000000;
         random=(int)num;
         return "ak"+StringHelper.translate(random);
-    }
+    }//生成一个apikey
     public static void trySet(int id,String apiKey)
     {
         if(apiDictionary==null)
@@ -25,5 +31,5 @@ public class ApiKeyHelper {
             apiDictionary=new HashMap<>();
         }
         apiDictionary.put(id,apiKey);
-    }
+    }//设置apikey
 }

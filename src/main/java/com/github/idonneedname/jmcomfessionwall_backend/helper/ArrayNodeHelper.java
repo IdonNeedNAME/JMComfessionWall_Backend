@@ -82,6 +82,6 @@ public class ArrayNodeHelper {
             list.add(arrayNode.get(i).asInt());
         }
         return list;
-    }
+    }//把字符串链表化
 
 }

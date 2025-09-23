@@ -4,7 +4,11 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.PictureHelper;
+import com.github.idonneedname.jmcomfessionwall_backend.mapper.PictureMapper;
+import jakarta.annotation.Resource;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +24,7 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @Entity
 public class Picture {
+    public Picture(){}
     public Picture(byte[] pix,int width,int height){
         this.width=width;
         this.height=height;

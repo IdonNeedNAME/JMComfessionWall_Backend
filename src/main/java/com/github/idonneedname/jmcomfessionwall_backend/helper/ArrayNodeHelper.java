@@ -42,13 +42,15 @@ public class ArrayNodeHelper {
             return null;
         if(jsonNode.isArray()) {
             ArrayNode arrayNode = (ArrayNode) jsonNode;
+            if(idInArray(array,addition)!=-1)
+               return array;
             arrayNode.add(addition);
             return arrayNode.toString();
         }
         else
             return null;
     }
-    public static JsonNode translate(String node)//把字符串翻译成JsonNode
+    private static JsonNode translate(String node)//把字符串翻译成JsonNode
     {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode;

@@ -59,7 +59,7 @@ create table user
         primary key,
     username   varchar(20) not null,
     name       varchar(20) not null,
-    passWord   varchar(30) not null,
+    password   varchar(30) not null,
     type       int         not null,
     pictureref int         not null,
     blacklist  json        null

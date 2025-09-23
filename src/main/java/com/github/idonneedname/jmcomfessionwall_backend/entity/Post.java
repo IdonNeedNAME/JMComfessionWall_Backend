@@ -4,8 +4,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.ArrayNodeHelper;
+import com.github.idonneedname.jmcomfessionwall_backend.mapper.CommentMapper;
+import jakarta.annotation.Resource;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,7 +60,7 @@ public class Post {
     @TableField(exist = false)
     public ArrayList<Comment> subcomments;
     @TableField(exist = false)
-    public ArrayList<ArrayList<ArrayList<Integer>>> pictures;
+    public ArrayList<Picture> pictures;
     @TableField(exist = false)
     public boolean liked;
     @TableField(exist = false)

@@ -8,22 +8,25 @@ import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.ApiKeyHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.ArrayNodeHelper;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.AssembleHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.PictureHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.AdminWhiteListMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PictureMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.UserMapper;
-import com.github.idonneedname.jmcomfessionwall_backend.request.LoginRequest;
-import com.github.idonneedname.jmcomfessionwall_backend.request.RegisterRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.*;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import com.github.idonneedname.jmcomfessionwall_backend.service.UserService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.internal.util.StringHelper;
 import org.springframework.stereotype.Service;
 
 import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
     @Resource
     private final UserMapper userMapper;
@@ -33,6 +36,9 @@ public class UserServiceImpl implements UserService {
     private final PictureMapper pictureMapper;
     @Resource
     private final AdminWhiteListMapper  adminWhiteListMapper;
+    @Resource
+    AssembleHelper  assembleHelper;
+    @Override
     public AjaxResult<User> login(LoginRequest req){
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("username",req.getUsername()).eq("password",req.getPassword());
@@ -91,6 +97,7 @@ public class UserServiceImpl implements UserService {
         else
             return true;
     }
+    @Override
     public AjaxResult<String>  register(RegisterRequest req){
            if(isUserNameValid(req.getUsername()))
            {
@@ -123,5 +130,106 @@ public class UserServiceImpl implements UserService {
            }
            return AjaxResult.fail(null);
     }
+    @Override
+    public AjaxResult<String> amend_Name(AmendNameRequest req,String apiKey)
+    {
+        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+            throw new ApiException(INVALID_APIKEY);
+        if(isUserNameValid(req.newname))
+        {
+            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("id",req.user_id);
+            User user = userMapper.selectOne(queryWrapper);
+            if(user==null)
+                throw new ApiException(USER_NOT_FOUND);
+            user.name=req.newname;
+            userMapper.update(user,queryWrapper);
+            return AjaxResult.success(null);
+        }
+        return AjaxResult.fail(null);
+    }
+    @Override
+    public AjaxResult<String> amend_Password(AmendPasswordRequest req,String apiKey)
+    {
+        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+            throw new ApiException(INVALID_APIKEY);
+        if(isPassWordValid(req.newpassword))
+        {
+            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("id",req.user_id);
+            User user = userMapper.selectOne(queryWrapper);
+            if(user==null)
+                throw new ApiException(USER_NOT_FOUND);
+            user.password=req.newpassword;
+            userMapper.update(user,queryWrapper);
+            return AjaxResult.success(null);
+        }
+        else
+            throw new ApiException(INVALID_PASSWORD);
+    }
+    @Override
+    public AjaxResult<User> getUserInformation(GetUserInfoRequest req,String apiKey)
+    {
+        log.info(apiKey);
+        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+            throw new ApiException(INVALID_APIKEY);
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",req.user_id);
+        User user = userMapper.selectOne(queryWrapper);
+        if(user==null)
+            throw new ApiException(USER_NOT_FOUND);
+        else
+        {
+            assembleHelper.assemble(user);
+            return AjaxResult.success(user);
+        }
+
+    }
+    @Override
+    public AjaxResult<String> uploadPortrait(UploadPortraitRequest req,String apiKey)
+    {
+        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+            throw new ApiException(INVALID_APIKEY);
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",req.user_id);
+        User user = userMapper.selectOne(queryWrapper);
+        if(user==null)
+            throw new ApiException(USER_NOT_FOUND);
+        user.pictureref=pictureHelper.storeOne(req.picture);
+        userMapper.update(user,queryWrapper);
+        return AjaxResult.success(null);
+    }
+    @Override
+    public AjaxResult<String> addBlackList(BlackListRequest req, String apiKey)
+    {
+        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+            throw new ApiException(INVALID_APIKEY);
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",req.user_id);
+        User user = userMapper.selectOne(queryWrapper);
+        if(user==null)
+            throw new ApiException(USER_NOT_FOUND);
+        if(user.blacklist==null)
+            user.blacklist="[]";
+        user.blacklist=ArrayNodeHelper.add(user.blacklist,req.target_id);
+        userMapper.update(user,queryWrapper);
+        return AjaxResult.success(null);
+    }
+    public AjaxResult<String> deleteBlackList(BlackListRequest req, String apiKey)
+    {
+        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+            throw new ApiException(INVALID_APIKEY);
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",req.user_id);
+        User user = userMapper.selectOne(queryWrapper);
+        if(user==null)
+            throw new ApiException(USER_NOT_FOUND);
+        if(user.blacklist==null)
+            user.blacklist="[]";
+        user.blacklist=ArrayNodeHelper.delete(user.blacklist,req.target_id);
+        userMapper.update(user,queryWrapper);
+        return AjaxResult.success(null);
+    }
+
 
 }

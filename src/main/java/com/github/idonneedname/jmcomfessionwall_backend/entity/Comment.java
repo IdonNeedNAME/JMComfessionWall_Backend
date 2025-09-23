@@ -4,14 +4,19 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.ArrayNodeHelper;
+import com.github.idonneedname.jmcomfessionwall_backend.mapper.CommentMapper;
+import jakarta.annotation.Resource;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @TableName(value = "comment")
@@ -19,16 +24,17 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class Comment {
-    public Comment(int id,int host,String content,int depth,boolean hidden,String likelist,String subcomment) {
-         this.id = id;
-         this.host = host;
-         this.content = content;
-         this.depth = depth;
-         this.hidden = hidden;
-         this.likelist = likelist;
-         this.subcomment = subcomment;
+    public Comment(int id, int host, String content, int depth, boolean hidden, String likelist, String subcomment) {
+        this.id = id;
+        this.host = host;
+        this.content = content;
+        this.depth = depth;
+        this.hidden = hidden;
+        this.likelist = likelist;
+        this.subcomment = subcomment;
     }
-    @TableId(type= IdType.AUTO)
+
+    @TableId(type = IdType.AUTO)
     public int id;
     public int host;
     public String content;
@@ -50,3 +56,4 @@ public class Comment {
     @TableField(exist = false)
     public int commentCount;
 }
+

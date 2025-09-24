@@ -9,6 +9,10 @@ public class ApiKeyHelper {
     public static boolean isVaildApiKey(int id,String apiKey){
         if(apiKey.equals("ak1145141919810"))
             return true;
+        if(apiDictionary==null)
+        {
+            apiDictionary=new HashMap<>();
+        }
         String api=apiDictionary.get(id);
         if(api==null)
             return false;//说明这个id没有登记

@@ -76,7 +76,7 @@ public class PictureHelper {
         }
         return storeOne(pixels,width,height);
     }
-    public int storeOne(byte[] pixels,int width,int height)//存储一个图片
+    public int storeOne(byte[] pixels,int width,int height)//存储一个图片返回该图片的编号
     {
         int featurecode=getFeatureCode(pixels,width,height);
 

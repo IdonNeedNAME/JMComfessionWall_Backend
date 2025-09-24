@@ -6,10 +6,7 @@ import com.github.idonneedname.jmcomfessionwall_backend.entity.AdminWhiteList;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Picture;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.ApiKeyHelper;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.ArrayNodeHelper;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.AssembleHelper;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.PictureHelper;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.*;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.AdminWhiteListMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PictureMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.UserMapper;
@@ -19,7 +16,6 @@ import com.github.idonneedname.jmcomfessionwall_backend.service.UserService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.internal.util.StringHelper;
 import org.springframework.stereotype.Service;
 
 import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.*;
@@ -38,6 +34,8 @@ public class UserServiceImpl implements UserService {
     private final AdminWhiteListMapper  adminWhiteListMapper;
     @Resource
     AssembleHelper  assembleHelper;
+    @Resource
+    StringHelper stringHelper;
     @Override
     public AjaxResult<User> login(LoginRequest req){
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -188,6 +186,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public AjaxResult<String> uploadPortrait(UploadPortraitRequest req,String apiKey)
     {
+        StringHelper.log(req.user_id);
         if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();

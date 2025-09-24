@@ -1,14 +1,16 @@
 package com.github.idonneedname.jmcomfessionwall_backend.request;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
-public class UploadPortraitRequest {
+public class UploadPostRequest {
     public int user_id;
-    public MultipartFile picture;
+    public String title;
+    public String content;
+    public MultipartFile[] pictures;
+    public boolean ispublic;
+    public boolean anonymity;
 }

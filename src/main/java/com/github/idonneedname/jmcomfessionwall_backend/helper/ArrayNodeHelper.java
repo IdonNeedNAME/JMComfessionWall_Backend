@@ -50,7 +50,7 @@ public class ArrayNodeHelper {
         else
             return null;
     }
-    private static JsonNode translate(String node)//把字符串翻译成JsonNode
+    public static JsonNode translate(String node)//把字符串翻译成JsonNode
     {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode;

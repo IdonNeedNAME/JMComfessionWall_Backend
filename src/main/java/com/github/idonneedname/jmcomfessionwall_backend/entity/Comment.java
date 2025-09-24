@@ -4,25 +4,20 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.ArrayNodeHelper;
-import com.github.idonneedname.jmcomfessionwall_backend.mapper.CommentMapper;
-import jakarta.annotation.Resource;
-import jakarta.persistence.Column;
+import com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum;
+import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import org.hibernate.annotations.Type;
-
-import java.util.ArrayList;
+import lombok.NoArgsConstructor;
 import java.util.List;
 
 @TableName(value = "comment")
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class Comment {
     public Comment(int id, int host, String content, int depth, boolean hidden, String likelist, String subcomment) {
         this.id = id;
@@ -41,6 +36,7 @@ public class Comment {
     public int depth;
     public boolean hidden;
 
+
     //下面两个实质是个存放id的List，用ArrayNodeHelper里的方法操作
     @JsonIgnore
     public String likelist;//点赞人
@@ -55,5 +51,11 @@ public class Comment {
     public int likes;
     @TableField(exist = false)
     public int commentCount;
+
+    public void setContent(String content) {
+        if(content==null||content.isEmpty()) {throw new ApiException(ExceptionEnum.NULL_CONTENT);}
+        if(content.length()>1000) {throw new ApiException(ExceptionEnum.CONTENT_TOO_LONG);}
+        this.content = content;
+    }
 }
 

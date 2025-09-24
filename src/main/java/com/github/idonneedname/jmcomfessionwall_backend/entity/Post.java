@@ -23,6 +23,8 @@ import java.util.ArrayList;
 @Builder
 @AllArgsConstructor
 public class Post {
+    public Post()
+    {}
     public Post(int id,int host,String title,
     String content,int depth,boolean anonymity,boolean hidden,boolean isPublic,
     String likelist,String picture,String subcomment)

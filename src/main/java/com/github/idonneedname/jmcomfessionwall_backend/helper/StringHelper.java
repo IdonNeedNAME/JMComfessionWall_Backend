@@ -6,19 +6,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class StringHelper {
-    public static String translate(int a)//数转字符串
-    {
-        String s="";
-        while(a>0)
-        {
-            s=(char)(a%10+48)+s;
-            a/=10;
-        }
-        return s;
-    }
     public static void log(int a)
     {
-        log.info(translate(a));
+        log.info(String.valueOf(a));
     }//log一个数
     public static void log(String a)
     {

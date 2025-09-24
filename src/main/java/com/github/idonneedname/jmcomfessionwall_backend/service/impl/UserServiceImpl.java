@@ -19,7 +19,6 @@ import com.github.idonneedname.jmcomfessionwall_backend.service.UserService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.internal.util.StringHelper;
 import org.springframework.stereotype.Service;
 
 import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.*;
@@ -62,9 +61,7 @@ public class UserServiceImpl implements UserService {
         }
     }
     public boolean isUserNameValid(String username){
-           if(username.length()>20)
-               throw new ApiException(USERNAME_TOO_LONG);
-           return true;
+        return username.length() <= 20;
     }
     public boolean isPassWordValid(String password) {
         boolean num=false,letter=false;
@@ -81,10 +78,7 @@ public class UserServiceImpl implements UserService {
             else
                 return false;
         }
-        if(num&&letter)
-            return true;
-        else
-            return false;
+        return num && letter;
     }
     public boolean isTypeValid(RegisterRequest req){
         if(req.type==1)
@@ -92,10 +86,7 @@ public class UserServiceImpl implements UserService {
         QueryWrapper<AdminWhiteList> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("username",req.username);
         AdminWhiteList adminWhiteList = adminWhiteListMapper.selectOne(queryWrapper);
-        if(adminWhiteList==null)
-            return false;
-        else
-            return true;
+        return adminWhiteList != null;
     }
     @Override
     public AjaxResult<String>  register(RegisterRequest req){
@@ -128,7 +119,7 @@ public class UserServiceImpl implements UserService {
                else
                    throw new ApiException(INVALID_PASSWORD);
            }
-           return AjaxResult.fail(null);
+           return AjaxResult.fail(USERNAME_TOO_LONG);
     }
     @Override
     public AjaxResult<String> amend_Name(AmendNameRequest req,String apiKey)
@@ -146,7 +137,7 @@ public class UserServiceImpl implements UserService {
             userMapper.update(user,queryWrapper);
             return AjaxResult.success(null);
         }
-        return AjaxResult.fail(null);
+        return AjaxResult.fail(USERNAME_TOO_LONG);
     }
     @Override
     public AjaxResult<String> amend_Password(AmendPasswordRequest req,String apiKey)

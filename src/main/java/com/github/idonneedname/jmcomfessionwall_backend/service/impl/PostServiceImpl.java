@@ -100,26 +100,7 @@ public class PostServiceImpl implements PostService {
             post.anonymity=req.anonymity;
             post.likelist="[]";
             post.subcomment="[]";
-            ObjectMapper objectMapper = new ObjectMapper();
-            ArrayNode array= objectMapper.createArrayNode();
-            if(req.pictures!=null)
-            {
-                if(req.pictures.length>1) {
-
-                    if(req.pictures.length>=10)
-                        throw new ApiException(PICTURE_TOO_LONG);
-
-                    log.info(String.valueOf(req.pictures.length));
-                    int id;
-                    for (int i = 0; i < req.pictures.length; i++) {
-                        id = pictureHelper.storeOne(req.pictures[i]);
-                        array.add(id);
-                        StringHelper.log(id);
-                    }
-                }
-            }
-            if(array.isEmpty()) post.picture="[]";
-            else post.picture=array.toString();
+            post.picture=getPicture(req.pictures);
             postMapper.insert(post);
             return AjaxResult.success(null);
         }

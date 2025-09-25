@@ -83,8 +83,8 @@ public class AssembleHelper {
             if(comments!=null&&!comments.isEmpty())
             {
 
-                post.commentCount=comments.size();
-                if(post.depth<3&&shouldInitialComments)
+                post.commentCount=0;
+                if(post.depth<3)
                 {
                     post.subcomments=new ArrayList<>();
                     int sub;
@@ -95,8 +95,14 @@ public class AssembleHelper {
                         QueryWrapper<Comment> wrapper=new QueryWrapper<>();
                         wrapper.eq("id",sub);
                         Comment subcomment=commentMapper.selectById(sub);
-                        assemble(subcomment,target);
-                        post.subcomments.add(subcomment);
+                        if(subcomment.hidden)
+                            continue;
+                        if(shouldInitialComments)
+                        {
+                            assemble(subcomment,target);
+                            post.subcomments.add(subcomment);
+                        }
+                        post.commentCount++;
                     }
                 }
 

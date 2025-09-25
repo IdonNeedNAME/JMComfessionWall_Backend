@@ -40,7 +40,8 @@ public class PostServiceImpl implements PostService {
     private PictureMapper pictureMapper;
     @Resource
     private AssembleHelper  assembleHelper;
-
+    @Resource
+    private ApiKeyHelper apiKeyHelper;
 
     public boolean isTitleValid(String title)
     {
@@ -61,7 +62,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public AjaxResult<String> uploadPost(UploadPostRequest req,String apiKey)
     {
-        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
         if(isContentValid(req.content)&&isTitleValid(req.title))
         {
@@ -80,6 +81,10 @@ public class PostServiceImpl implements PostService {
             if(req.pictures!=null)
             {
                 if(req.pictures.length>1) {
+
+                    if(req.pictures.length>=10)
+                        throw new ApiException(PICTURE_TOO_LONG);
+
                     log.info(String.valueOf(req.pictures.length));
                     int id;
                     for (int i = 0; i < req.pictures.length; i++) {
@@ -99,7 +104,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public AjaxResult<List<Post>> getPostOfUser(GetPostOfUserRequest req,String apiKey)
     {
-        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
         QueryWrapper<Post> queryWrapper=new QueryWrapper<>();
         queryWrapper.eq("host",req.user_id);
@@ -107,19 +112,22 @@ public class PostServiceImpl implements PostService {
         if(posts.isEmpty()) return AjaxResult.success(null);
         for(int i=0;i<posts.size();i++)
         {
-            assembleHelper.assemble(posts.get(i),req.user_id,false);
+            if(!posts.get(i).hidden)
+               assembleHelper.assemble(posts.get(i),req.user_id,false);
         }
         return AjaxResult.success(posts);
     }
     @Override
     public AjaxResult<Post> getPostInfo(GetPostInfoRequest req,String apiKey)
     {
-        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
         QueryWrapper<Post> queryWrapper=new QueryWrapper<>();
         queryWrapper.eq("id",req.post_id);
         Post post=postMapper.selectOne(queryWrapper);
         if(post==null)
+            throw new ApiException(POST_NOT_FOUND);
+        if(post.hidden)
             throw new ApiException(POST_NOT_FOUND);
         assembleHelper.assemble(post,req.user_id,true);
         return AjaxResult.success(post);

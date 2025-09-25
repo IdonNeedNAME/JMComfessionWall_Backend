@@ -33,10 +33,12 @@ public class CommentServiceImpl implements CommentService {
     private CommentMapper commentMapper;
     @Resource
     private AssembleHelper assembleHelper;
+    @Resource
+    private ApiKeyHelper apiKeyHelper;
     @Override
     public AjaxResult<String> uploadComment(UploadCommentRequest req,String apiKey)
     {
-        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
 
         Comment comment = new Comment();
@@ -80,7 +82,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public AjaxResult<ArrayList<Comment>> getCommentsOfPost(GetCommentsOfPostRequest req, String apiKey)
     {
-        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
         QueryWrapper<Post> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",req.post_id);
@@ -93,7 +95,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public AjaxResult<Comment> getCommentInfo(GetCommentInfoRequest req, String apiKey)
     {
-        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
         QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",req.comment_id);

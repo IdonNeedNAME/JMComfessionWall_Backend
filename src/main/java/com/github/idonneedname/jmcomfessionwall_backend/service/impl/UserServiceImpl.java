@@ -36,6 +36,8 @@ public class UserServiceImpl implements UserService {
     AssembleHelper  assembleHelper;
     @Resource
     StringHelper stringHelper;
+    @Resource
+    ApiKeyHelper apiKeyHelper;
     @Override
     public AjaxResult<User> login(LoginRequest req){
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -53,8 +55,7 @@ public class UserServiceImpl implements UserService {
              if(user.portrait!=null)
                  user.portrait.pixel=pictureHelper.getPixels(user.pictureref);
              AjaxResult<User> response=AjaxResult.success(user);
-             String api=ApiKeyHelper.genApiKey(user.id);
-             ApiKeyHelper.trySet(user.id,api);
+             String api=apiKeyHelper.trySet(user.id);
              response.setMsg(api);
              return response;
         }
@@ -123,7 +124,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public AjaxResult<String> amend_Name(AmendNameRequest req,String apiKey)
     {
-        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
         if(isUserNameValid(req.newname))
         {
@@ -141,7 +142,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public AjaxResult<String> amend_Password(AmendPasswordRequest req,String apiKey)
     {
-        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
         if(isPassWordValid(req.newpassword))
         {
@@ -164,8 +165,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public AjaxResult<User> getUserInformation(GetUserInfoRequest req,String apiKey)
     {
-        log.info(apiKey);
-        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+        //log.info(apiKey);
+        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",req.user_id);
@@ -183,7 +184,7 @@ public class UserServiceImpl implements UserService {
     public AjaxResult<String> uploadPortrait(UploadPortraitRequest req,String apiKey)
     {
         StringHelper.log(req.user_id);
-        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",req.user_id);
@@ -197,7 +198,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public AjaxResult<String> addBlackList(BlackListRequest req, String apiKey)
     {
-        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",req.user_id);
@@ -212,7 +213,7 @@ public class UserServiceImpl implements UserService {
     }
     public AjaxResult<String> deleteBlackList(BlackListRequest req, String apiKey)
     {
-        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",req.user_id);

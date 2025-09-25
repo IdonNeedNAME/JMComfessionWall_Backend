@@ -20,26 +20,25 @@ public enum ExceptionEnum {
     INVALID_APIKEY(1008,"APIKEY错误"),
     USER_NOT_FOUND(1009,"用户不存在"),
     NULL_USERNAME(1010,"用户名能为空"),
-
+    OVERTIME_LOGIN(1011,"登录超时"),
     //post类错误
     POST_NOT_FOUND(1002, "资源不存在"),
     COMMENT_NOT_FOUND(1002, "资源不存在"),
     CONTENT_TOO_LONG(2003, "帖子内容过长"),
     COMMENT_TOO_LONG(2004, "评论过长"),
     TITLE_TOO_LONG(2005, "标题内容过长"),
-    PICTURE_TOO_LONG(2005, "图片上限九张"),
+    PICTURE_TOO_LONG(2006, "图片上限九张"),
     NULL_TITLE(1010,"标题不能为空"),
     NULL_CONTENT(1010,"内容不能为空"),
     ORIGINAL_PASSWORD_ERROR(1011,"原密码错误"),
+
     //post审核状态
     RESOURCE_REPORTED(2006, "该帖子被举报，正在审核中"),
     RESOURCE_HAVE_BEEN_CHECKED(200, "该帖子已审核通过"),
     RESOURCE_NORMAL(200, null),
+
     //举报
     REPORT_NOT_FOUND(3001,"举报不存在"),
-
-
-
     //其他
     NOT_FOUND_ERROR(200404, HttpStatus.NOT_FOUND.getReasonPhrase()),
     INVALID_PARAMETER(200000, "参数错误"),

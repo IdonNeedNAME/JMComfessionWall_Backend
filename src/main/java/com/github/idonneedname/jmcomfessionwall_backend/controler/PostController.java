@@ -2,10 +2,7 @@ package com.github.idonneedname.jmcomfessionwall_backend.controler;
 
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Comment;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
-import com.github.idonneedname.jmcomfessionwall_backend.request.GetCommentsOfPostRequest;
-import com.github.idonneedname.jmcomfessionwall_backend.request.GetPostInfoRequest;
-import com.github.idonneedname.jmcomfessionwall_backend.request.UploadCommentRequest;
-import com.github.idonneedname.jmcomfessionwall_backend.request.UploadPostRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.*;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import com.github.idonneedname.jmcomfessionwall_backend.service.impl.CommentServiceImpl;
 import com.github.idonneedname.jmcomfessionwall_backend.service.impl.PostServiceImpl;
@@ -47,5 +44,4 @@ public class PostController {
     {
         return commentService.getCommentsOfPost(req,api);
     }
-
 }

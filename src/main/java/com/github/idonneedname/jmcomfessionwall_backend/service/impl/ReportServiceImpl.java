@@ -27,10 +27,12 @@ import static com.github.idonneedname.jmcomfessionwall_backend.constant.Exceptio
 public class ReportServiceImpl implements ReportService {
     @Resource
     private ReportMapper reportMapper;
+    @Resource
+    private ApiKeyHelper apiKeyHelper;
     @Override
     public AjaxResult<Report> getReportInfo(GetReportInfoRequest req, String apiKey)
     {
-        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
         QueryWrapper<Report> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",req.report_id);
@@ -44,14 +46,14 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public AjaxResult<List<Report>> getAllReports(GetAllReportsRequest req,String apiKey)
     {
-        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
         return AjaxResult.success(reportMapper.selectList(null));
     }
     @Override
     public AjaxResult<List<Report>> getAllUnchecked(GetUnCheckedReportsRequest req,String apiKey)
     {
-        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
         QueryWrapper<Report> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("status",0);

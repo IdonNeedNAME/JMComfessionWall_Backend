@@ -59,6 +59,30 @@ public class PostServiceImpl implements PostService {
             throw new ApiException(CONTENT_TOO_LONG);
         return true;
     }
+    //你加一下注释吧
+    public String getPicture(MultipartFile[] pictures){
+        String picture;
+        ObjectMapper objectMapper = new ObjectMapper();
+        ArrayNode array= objectMapper.createArrayNode();
+        if(pictures!=null)
+        {
+            if(pictures.length>1) {
+
+                if(pictures.length>=10)
+                    throw new ApiException(PICTURE_TOO_LONG);
+
+                log.info(String.valueOf(pictures.length));
+                int id;
+                for (int i = 0; i < pictures.length; i++) {
+                    id = pictureHelper.storeOne(pictures[i]);
+                    array.add(id);
+                }
+            }
+        }
+        if(array.isEmpty()) picture="[]";
+        else picture=array.toString();
+        return picture;
+    }
     @Override
     public AjaxResult<String> uploadPost(UploadPostRequest req,String apiKey)
     {

@@ -54,7 +54,7 @@ public class PostServiceImpl implements PostService {
     {
         if(content==null||content.isEmpty())
             throw new ApiException(NULL_CONTENT);
-        if(content.length()>20)
+        if(content.length()>1000)
             throw new ApiException(CONTENT_TOO_LONG);
         return true;
     }

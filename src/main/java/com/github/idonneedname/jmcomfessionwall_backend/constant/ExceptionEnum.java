@@ -29,10 +29,15 @@ public enum ExceptionEnum {
     TITLE_TOO_LONG(2005, "标题内容过长"),
     NULL_TITLE(1010,"标题不能为空"),
     NULL_CONTENT(1010,"内容不能为空"),
+    ORIGINAL_PASSWORD_ERROR(1011,"原密码错误"),
     //post审核状态
     RESOURCE_REPORTED(2006, "该帖子被举报，正在审核中"),
     RESOURCE_HAVE_BEEN_CHECKED(200, "该帖子已审核通过"),
     RESOURCE_NORMAL(200, null),
+    //举报
+    REPORT_NOT_FOUND(3001,"举报不存在"),
+
+
 
     //其他
     NOT_FOUND_ERROR(200404, HttpStatus.NOT_FOUND.getReasonPhrase()),

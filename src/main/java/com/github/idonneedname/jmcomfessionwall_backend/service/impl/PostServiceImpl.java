@@ -1,17 +1,17 @@
 package com.github.idonneedname.jmcomfessionwall_backend.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.ApiKeyHelper;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.ArrayNodeHelper;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.PictureHelper;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.StringHelper;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.*;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PictureMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;
+import com.github.idonneedname.jmcomfessionwall_backend.request.GetPostInfoRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.GetPostOfUserRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.UploadPostRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import com.github.idonneedname.jmcomfessionwall_backend.service.PostService;
@@ -21,6 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.*;
 
@@ -33,8 +36,12 @@ public class PostServiceImpl implements PostService {
     private PostMapper postMapper;
     @Resource
     private PictureHelper pictureHelper;
-    @Autowired
+    @Resource
     private PictureMapper pictureMapper;
+    @Resource
+    private AssembleHelper  assembleHelper;
+
+
     public boolean isTitleValid(String title)
     {
         if(title==null||title.isEmpty())
@@ -72,12 +79,14 @@ public class PostServiceImpl implements PostService {
             ArrayNode array= objectMapper.createArrayNode();
             if(req.pictures!=null)
             {
-                int id;
-                for(int i=0;i<req.pictures.length;i++)
-                {
-                    id=pictureHelper.storeOne(req.pictures[i]);
-                    array.add(id);
-                    StringHelper.log(id);
+                if(req.pictures.length>1) {
+                    log.info(String.valueOf(req.pictures.length));
+                    int id;
+                    for (int i = 0; i < req.pictures.length; i++) {
+                        id = pictureHelper.storeOne(req.pictures[i]);
+                        array.add(id);
+                        StringHelper.log(id);
+                    }
                 }
             }
             if(array.isEmpty()) post.picture="[]";
@@ -87,6 +96,35 @@ public class PostServiceImpl implements PostService {
         }
         return  AjaxResult.fail(null);
     }
+    @Override
+    public AjaxResult<List<Post>> getPostOfUser(GetPostOfUserRequest req,String apiKey)
+    {
+        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+            throw new ApiException(INVALID_APIKEY);
+        QueryWrapper<Post> queryWrapper=new QueryWrapper<>();
+        queryWrapper.eq("host",req.user_id);
+        List<Post> posts = postMapper.selectList(queryWrapper);
+        if(posts.isEmpty()) return AjaxResult.success(null);
+        for(int i=0;i<posts.size();i++)
+        {
+            assembleHelper.assemble(posts.get(i),req.user_id,false);
+        }
+        return AjaxResult.success(posts);
+    }
+    @Override
+    public AjaxResult<Post> getPostInfo(GetPostInfoRequest req,String apiKey)
+    {
+        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+            throw new ApiException(INVALID_APIKEY);
+        QueryWrapper<Post> queryWrapper=new QueryWrapper<>();
+        queryWrapper.eq("id",req.post_id);
+        Post post=postMapper.selectOne(queryWrapper);
+        if(post==null)
+            throw new ApiException(POST_NOT_FOUND);
+        assembleHelper.assemble(post,req.user_id,true);
+        return AjaxResult.success(post);
+    }
+
 
 }
 

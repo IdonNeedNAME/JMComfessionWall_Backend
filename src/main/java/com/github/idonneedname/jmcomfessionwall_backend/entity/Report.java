@@ -3,7 +3,6 @@ package com.github.idonneedname.jmcomfessionwall_backend.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,13 +10,15 @@ import lombok.Data;
 @Data
 @Builder
 public class Report {
-    public Report(int id,int targetype,String content,int status,int result)
-    {
-        this.id=id;
-        this.targetype=targetype;
-        this.content=content;
-        this.status=status;
-        this.result=result;
+    public Report(){}
+    public Report(int id,int targetype,String content,int status,int result,int targetid,String reason){
+        this.id = id;
+        this.targetype = targetype;
+        this.content = content;
+        this.status = status;
+        this.result = result;
+        this.targetid = targetid;
+        this.reason = reason;
     }
     @TableId(type= IdType.AUTO)
     public int id;
@@ -25,6 +26,6 @@ public class Report {
     public String content;
     public int status;
     public int result;
-
-
+    public int targetid;
+    public String reason;
 }

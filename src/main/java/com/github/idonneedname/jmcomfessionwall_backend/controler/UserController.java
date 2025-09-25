@@ -1,22 +1,26 @@
 package com.github.idonneedname.jmcomfessionwall_backend.controler;
 
+import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
 import com.github.idonneedname.jmcomfessionwall_backend.request.*;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
-import com.github.idonneedname.jmcomfessionwall_backend.service.UserService;
+import com.github.idonneedname.jmcomfessionwall_backend.service.impl.PostServiceImpl;
 import com.github.idonneedname.jmcomfessionwall_backend.service.impl.UserServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
 @Slf4j
-public class UserControler {
+public class UserController {
     @Resource
     private UserServiceImpl userService;
+    @Resource
+    private PostServiceImpl postService;
 
     @PostMapping("/register")
     public AjaxResult<String> register(@RequestBody RegisterRequest req){
@@ -52,5 +56,9 @@ public class UserControler {
     @DeleteMapping("/deblacklist")
     public AjaxResult<String> deleteBlacklist(@RequestBody BlackListRequest req, @RequestHeader("X-API-KEY") String api){
         return userService.deleteBlackList(req,api);
+    }
+    @GetMapping("/post")
+    public AjaxResult<List<Post>> getPostsOfUser(@RequestBody GetPostOfUserRequest req, @RequestHeader("X-API-KEY") String api){
+        return postService.getPostOfUser(req,api);
     }
 }

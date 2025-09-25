@@ -148,8 +148,12 @@ public class UserServiceImpl implements UserService {
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("id",req.user_id);
             User user = userMapper.selectOne(queryWrapper);
+            
             if(user==null)
                 throw new ApiException(USER_NOT_FOUND);
+            if(!user.password.equals(req.originpassword))
+                throw new ApiException(ORIGINAL_PASSWORD_ERROR);
+
             user.password=req.newpassword;
             userMapper.update(user,queryWrapper);
             return AjaxResult.success(null);

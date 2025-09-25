@@ -18,13 +18,10 @@ public class ApiKeyHelper {
             return false;//说明这个id没有登记
         return api.equals(apiKey);
     }//判断前端返回的apikey是否合法
-    private static HashMap<Integer,String> apiDictionary;//登记api的静态字段
+    private static HashMap<Integer,String> apiDictionary=new HashMap<>();//登记api的静态字段
     public static String genApiKey(int id)
     {
-        int random=(int)(Math.random()*100);
-        double num=abs(sin(id * random));
-        num*=1000000000;
-        random=(int)num;
+        int random=(int)(Math.random()*1000000000);
         String apiKey="ak"+random;
         StringHelper.log(apiKey);
         return apiKey;

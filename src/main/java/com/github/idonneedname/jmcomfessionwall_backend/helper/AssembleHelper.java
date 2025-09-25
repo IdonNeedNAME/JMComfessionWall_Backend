@@ -79,33 +79,31 @@ public class AssembleHelper {
             }
         }
         //子评论
-        if(shouldInitialComments)
-        {
             ArrayList<Integer> comments= ArrayNodeHelper.translateToArray(post.subcomment);
             if(comments!=null&&!comments.isEmpty())
             {
-                post.subcomments=new ArrayList<>();
+
                 post.commentCount=comments.size();
-                if(post.depth<3)
+                if(post.depth<3&&shouldInitialComments)
                 {
+                    post.subcomments=new ArrayList<>();
                     int sub;
                     for(int i=0;i<comments.size();i++)
                     {
                         sub=comments.get(i);
+                        StringHelper.log(sub);
                         QueryWrapper<Comment> wrapper=new QueryWrapper<>();
                         wrapper.eq("id",sub);
                         Comment subcomment=commentMapper.selectById(sub);
-                        assembly(subcomment,target);
+                        assemble(subcomment,target);
                         post.subcomments.add(subcomment);
                     }
                 }
 
             }
-        }
-
     }
     //配置评论信息具体内容
-    public void assembly(Comment comment,int target)
+    public void assemble(Comment comment,int target)
     {
         //点赞
         ArrayList<Integer> like= ArrayNodeHelper.translateToArray(comment.likelist);
@@ -121,11 +119,11 @@ public class AssembleHelper {
         }
         //子评论
         ArrayList<Integer> comments= ArrayNodeHelper.translateToArray(comment.subcomment);
-        if(comments!=null&&!comments.isEmpty())
+        if(comments!=null)
         {
             comment.subcomments=new ArrayList<>();
             comment.commentCount=comments.size();
-            if(comment.depth<3)
+            if(comment.depth<=2)
             {
                 int sub;
                 for(int i=0;i<comments.size();i++)
@@ -134,7 +132,7 @@ public class AssembleHelper {
                     QueryWrapper<Comment> wrapper=new QueryWrapper<>();
                     wrapper.eq("id",sub);
                     Comment subcomment=commentMapper.selectById(sub);
-                    assembly(comment,target);
+                    assemble(subcomment,target);
                     comment.subcomments.add(subcomment);
                 }
             }

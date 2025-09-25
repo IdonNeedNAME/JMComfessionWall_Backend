@@ -6,26 +6,34 @@ import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.ApiKeyHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.ArrayNodeHelper;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.AssembleHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.CommentMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;
+import com.github.idonneedname.jmcomfessionwall_backend.request.GetCommentInfoRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.GetCommentsOfPostRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.UploadCommentRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
+import com.github.idonneedname.jmcomfessionwall_backend.service.CommentService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.ArrayList;
 
 import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CommentServiceImpl {
+public class CommentServiceImpl implements CommentService {
     @Resource
     private PostMapper postMapper;
     @Resource
     private CommentMapper commentMapper;
+    @Resource
+    private AssembleHelper assembleHelper;
+    @Override
     public AjaxResult<String> uploadComment(UploadCommentRequest req,String apiKey)
     {
         if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
@@ -46,7 +54,7 @@ public class CommentServiceImpl {
             if(post!=null)
             {
                 post.subcomment= ArrayNodeHelper.add(post.subcomment,comment.id);
-                comment.depth=post.depth++;
+                comment.depth=post.depth+1;
                 postMapper.update(post,queryWrapper);
             }
             else
@@ -60,8 +68,8 @@ public class CommentServiceImpl {
             if(dad!=null)
             {
                 dad.subcomment= ArrayNodeHelper.add(dad.subcomment,comment.id);
-                comment.depth=dad.depth++;
-                commentMapper.update(comment,queryWrapper);
+                comment.depth=dad.depth+1;
+                commentMapper.update(dad,queryWrapper);
             }
             else
                 throw new ApiException(COMMENT_NOT_FOUND);
@@ -69,4 +77,31 @@ public class CommentServiceImpl {
         commentMapper.updateById(comment);
         return AjaxResult.success();
     }
+    @Override
+    public AjaxResult<ArrayList<Comment>> getCommentsOfPost(GetCommentsOfPostRequest req, String apiKey)
+    {
+        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+            throw new ApiException(INVALID_APIKEY);
+        QueryWrapper<Post> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",req.post_id);
+        Post post = postMapper.selectOne(queryWrapper);
+        if(post==null)
+            throw new ApiException(POST_NOT_FOUND);
+        assembleHelper.assemble(post,req.user_id,true);
+        return AjaxResult.success(post.subcomments);
+    }
+    @Override
+    public AjaxResult<Comment> getCommentInfo(GetCommentInfoRequest req, String apiKey)
+    {
+        if(!ApiKeyHelper.isVaildApiKey(req.user_id,apiKey))
+            throw new ApiException(INVALID_APIKEY);
+        QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",req.comment_id);
+        Comment comment = commentMapper.selectOne(queryWrapper);
+        if(comment==null)
+            throw new ApiException(COMMENT_NOT_FOUND);
+        assembleHelper.assemble(comment,req.user_id);
+        return AjaxResult.success(comment);
+    }
+
 }

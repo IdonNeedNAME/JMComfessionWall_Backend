@@ -5,8 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AmendPasswordRequest {
+public class GetUnCheckedReportsRequest {
     public int user_id;
-    public String originpassword;
-    public String newpassword;
 }

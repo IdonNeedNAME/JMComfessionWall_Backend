@@ -5,8 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AmendPasswordRequest {
+public class GetPostOfUserRequest {
     public int user_id;
-    public String originpassword;
-    public String newpassword;
+    public int target_id;
 }

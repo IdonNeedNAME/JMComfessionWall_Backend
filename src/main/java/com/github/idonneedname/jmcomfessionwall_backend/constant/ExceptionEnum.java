@@ -27,6 +27,7 @@ public enum ExceptionEnum {
     CONTENT_TOO_LONG(2003, "帖子内容过长"),
     COMMENT_TOO_LONG(2004, "评论过长"),
     TITLE_TOO_LONG(2005, "标题内容过长"),
+    PICTURE_TOO_LONG(2005, "图片上限九张"),
     NULL_TITLE(1010,"标题不能为空"),
     NULL_CONTENT(1010,"内容不能为空"),
     ORIGINAL_PASSWORD_ERROR(1011,"原密码错误"),

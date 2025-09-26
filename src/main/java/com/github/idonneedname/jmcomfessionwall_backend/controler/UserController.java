@@ -32,11 +32,11 @@ public class UserController {
     }
     @PatchMapping("/amend/name")
     public AjaxResult<String> amendName(@RequestBody AmendNameRequest req,@RequestHeader("X-API-KEY") String api){
-        return userService.amend_Name(req,api);
+        return userService.amendName(req,api);
     }
     @PatchMapping("/amend/password")
     public AjaxResult<String> amendPassword(@RequestBody AmendPasswordRequest req, @RequestHeader("X-API-KEY") String api){
-        return userService.amend_Password(req,api);
+        return userService.amendPassword(req,api);
     }
     @PostMapping(
             value = "/amend/portrait",

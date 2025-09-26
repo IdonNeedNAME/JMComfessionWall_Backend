@@ -45,10 +45,11 @@ public class AssembleHelper {
             user._blacklist= ArrayNodeHelper.translateToArray(user.blacklist);
         else
             user._blacklist=null;
+        user.password=null;
         if(user.portrait==null)
         {
             user.portrait=new Picture();
-            assemble(user.portrait,user.id);
+            assemble(user.portrait,user.pictureref);
         }
     }
     //配置帖子具体内容

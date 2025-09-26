@@ -70,7 +70,7 @@ public class PostServiceImpl implements PostService {
         if(pictures!=null)
         {
             log.info(String.valueOf(pictures.length));
-            if(pictures.length>=9)//防止超9张
+            if(pictures.length>9)//防止超9张
                 throw new ApiException(PICTURE_TOO_LONG);
             int id;
             for (int i = 0; i < pictures.length; i++) {

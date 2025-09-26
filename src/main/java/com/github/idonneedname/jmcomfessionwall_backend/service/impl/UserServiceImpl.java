@@ -169,7 +169,7 @@ public class UserServiceImpl implements UserService {
         if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",req.user_id);
+        queryWrapper.eq("id",req.target_id);
         User user = userMapper.selectOne(queryWrapper);
         if(user==null)
             throw new ApiException(USER_NOT_FOUND);

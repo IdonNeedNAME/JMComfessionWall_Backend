@@ -51,15 +51,17 @@ public class PictureHelper {
     {
         BufferedImage image;
         try {
-
              image= ImageIO.read(file.getInputStream());
         }
         catch (IOException e)
         {
             throw new RuntimeException(e);
         }
+        if(image==null)
+            return -1;
         int width=image.getWidth(),height=image.getHeight(),pix,cacu=0;
         byte[] pixels=new byte[width*height*4];
+        log.info("width:"+width+" ,height:"+height);
         for(int i=0;i<height;i++)
         {
             for(int j=0;j<width;j++,cacu+=4)

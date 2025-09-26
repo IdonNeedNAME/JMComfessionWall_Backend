@@ -62,24 +62,27 @@ public class PostServiceImpl implements PostService {
     //你加一下注释吧
     public String getPicture(MultipartFile[] pictures){
         String picture;
+
+        //新建一个链表，因为后面要转成特定格式字符串所以用了ArrayNode
         ObjectMapper objectMapper = new ObjectMapper();
         ArrayNode array= objectMapper.createArrayNode();
+
         if(pictures!=null)
         {
-            if(pictures.length>1) {
-
-                if(pictures.length>=10)
-                    throw new ApiException(PICTURE_TOO_LONG);
-
-                log.info(String.valueOf(pictures.length));
-                int id;
-                for (int i = 0; i < pictures.length; i++) {
-                    id = pictureHelper.storeOne(pictures[i]);
-                    array.add(id);
-                }
+            log.info(String.valueOf(pictures.length));
+            if(pictures.length>=9)//防止超9张
+                throw new ApiException(PICTURE_TOO_LONG);
+            int id;
+            for (int i = 0; i < pictures.length; i++) {
+                id = pictureHelper.storeOne(pictures[i]);//存储图片返回图片的索引，空的图片传回-1
+                if(id==-1) continue;
+                array.add(id);//把索引加进链表
             }
+
         }
-        if(array.isEmpty()) picture="[]";
+        //把存有图片索引的链表转成字符串以在数据库中储存
+        //格式是:[1,2,3,4,5]或者[](null)
+        if(array.isEmpty()) picture="[]";//没图片就默认为空数组“[]”
         else picture=array.toString();
         return picture;
     }

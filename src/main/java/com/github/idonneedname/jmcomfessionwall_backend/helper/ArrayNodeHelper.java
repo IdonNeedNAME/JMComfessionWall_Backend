@@ -33,7 +33,7 @@ public class ArrayNodeHelper {
         }
         return -1;
     }
-    public static String add(String array,int addition)//添加一个数到数组中
+    public static String add(String array,int addition)//添加一个数到数组中，返回遂改后的字符串
     {
         if(array==null)
             array="[]";
@@ -62,7 +62,7 @@ public class ArrayNodeHelper {
         }
         return jsonNode;
     }
-    public static String delete(String node,int id)//删除某个值
+    public static String delete(String node,int id)//删除某个值，返回修改后的字符串
     {
         JsonNode jsonNode=ArrayNodeHelper.translate(node);
         ArrayNode arrayNode = (ArrayNode) jsonNode;

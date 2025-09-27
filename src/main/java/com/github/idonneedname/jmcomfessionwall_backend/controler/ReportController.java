@@ -1,7 +1,6 @@
 package com.github.idonneedname.jmcomfessionwall_backend.controler;
 
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Report;
-import com.github.idonneedname.jmcomfessionwall_backend.mapper.ReportMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.request.GetAllReportsRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.GetReportInfoRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.GetUnCheckedReportsRequest;

@@ -1,17 +1,13 @@
 package com.github.idonneedname.jmcomfessionwall_backend.entity;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.ArrayNodeHelper;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.PictureHelper;
-import com.github.idonneedname.jmcomfessionwall_backend.mapper.PictureMapper;
-import jakarta.annotation.Resource;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 import java.util.ArrayList;
 

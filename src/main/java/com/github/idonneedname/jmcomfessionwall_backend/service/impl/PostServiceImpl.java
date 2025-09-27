@@ -1,28 +1,24 @@
 package com.github.idonneedname.jmcomfessionwall_backend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.*;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.ApiKeyHelper;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.AssembleHelper;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.PictureHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PictureMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;
-import com.github.idonneedname.jmcomfessionwall_backend.request.GetPostInfoRequest;
-import com.github.idonneedname.jmcomfessionwall_backend.request.GetPostOfUserRequest;
-import com.github.idonneedname.jmcomfessionwall_backend.request.UploadPostRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.*;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import com.github.idonneedname.jmcomfessionwall_backend.service.PostService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.*;
@@ -43,6 +39,21 @@ public class PostServiceImpl implements PostService {
     @Resource
     private ApiKeyHelper apiKeyHelper;
 
+    //检查修改时可能存在的一些问题
+    public void throwAmendQuestion(Post post,int user_id){
+        if (post == null) {
+            throw new ApiException(RESOURCE_NOT_FOUND);
+        }
+        /*
+        还要加一个举报不允许改
+        例:if (post.report==1){
+            throw new ApiException(ExceptionEnum.RESOURCE_reported);
+        }
+        */
+        if (post.host!=user_id) {
+            throw new ApiException(PERMISSION_NOT_ALLOWED);
+        }
+    }
     public boolean isTitleValid(String title)
     {
         if(title==null||title.isEmpty())
@@ -115,7 +126,7 @@ public class PostServiceImpl implements PostService {
         if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
         QueryWrapper<Post> queryWrapper=new QueryWrapper<>();
-        queryWrapper.eq("host",req.user_id);
+        queryWrapper.eq("host",req.target_id);
         List<Post> posts = postMapper.selectList(queryWrapper);
         if(posts.isEmpty()) return AjaxResult.success(null);
         for(int i=0;i<posts.size();i++)
@@ -140,7 +151,52 @@ public class PostServiceImpl implements PostService {
         assembleHelper.assemble(post,req.user_id,true);
         return AjaxResult.success(post);
     }
+    @Override
+    public void updatePostContent(UpdatePostContentRequest req, String apiKey){
+        if(!apiKeyHelper.isVaildApiKey(req.getUser_id(),apiKey))
+            throw new ApiException(INVALID_APIKEY);
+        if(isContentValid(req.getNewcontent())){
+            Post post = postMapper.selectById(req.getPost_id());
 
+            throwAmendQuestion(post,req.getUser_id());//检查修改时可能存在的一些问题
+            //修改
+            post.content=req.getNewcontent();
+            post.picture=getPicture(req.pictures);
+            postMapper.updateById(post);
+        }
+
+    }
+
+    @Override
+    public void updatePostTitle(UpdatePostTitleRequest req, String apiKey) {
+        if(!apiKeyHelper.isVaildApiKey(req.getUser_id(),apiKey))
+            throw new ApiException(INVALID_APIKEY);
+        if(isTitleValid(req.getNewtitle())){
+            Post post = postMapper.selectById(req.getPost_id());
+
+            throwAmendQuestion(post,req.getUser_id());//检查修改时可能存在的一些问题
+            //修改
+            post.title=req.getNewtitle();
+            postMapper.updateById(post);
+        }
+    }
+
+    @Override
+    public void updatePost(UpdatePostRequest req, String apiKey) {
+        if(!apiKeyHelper.isVaildApiKey(req.getUser_id(),apiKey))
+            throw new ApiException(INVALID_APIKEY);
+        if(isTitleValid(req.getNewtitle())) {
+            Post post = postMapper.selectById(req.getPost_id());
+
+            throwAmendQuestion(post, req.getUser_id());//检查修改时可能存在的一些问题
+            //修改
+            post.title=req.getNewtitle();
+            post.content=req.getNewcontent();
+            post.picture=getPicture(req.pictures);
+            postMapper.updateById(post);
+
+        }
+    }
 
 }
 

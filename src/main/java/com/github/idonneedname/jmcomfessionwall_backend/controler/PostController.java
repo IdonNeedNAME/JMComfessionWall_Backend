@@ -2,6 +2,7 @@ package com.github.idonneedname.jmcomfessionwall_backend.controler;
 
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Comment;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.StringHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.request.*;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import com.github.idonneedname.jmcomfessionwall_backend.service.impl.CommentServiceImpl;
@@ -12,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/post")
@@ -44,4 +44,20 @@ public class PostController {
     {
         return commentService.getCommentsOfPost(req,api);
     }
+    @PatchMapping("/amend/content")
+    public AjaxResult<Void> updatePostContest(UpdatePostContentRequest req, @RequestHeader("X-API-KEY") String api) {
+        postService.updatePostContent(req,api);
+        return AjaxResult.success();
+    }
+    @PatchMapping("/amend/title")
+    public AjaxResult<Void> updatePostTitle(@RequestBody UpdatePostTitleRequest req, @RequestHeader("X-API-KEY") String api){
+        postService.updatePostTitle(req,api);
+        return AjaxResult.success();
+    }
+    @PatchMapping("/amend")
+    public AjaxResult<Void> updatePost(UpdatePostRequest req, @RequestHeader("X-API-KEY") String api){
+        postService.updatePost(req,api);
+        return AjaxResult.success();
+    }
+
 }

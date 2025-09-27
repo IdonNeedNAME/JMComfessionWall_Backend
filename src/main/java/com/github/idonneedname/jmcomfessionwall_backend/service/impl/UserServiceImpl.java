@@ -149,7 +149,7 @@ public class UserServiceImpl implements UserService {
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("id",req.user_id);
             User user = userMapper.selectOne(queryWrapper);
-            
+
             if(user==null)
                 throw new ApiException(USER_NOT_FOUND);
             if(!user.password.equals(req.originpassword))
@@ -205,6 +205,7 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.selectOne(queryWrapper);
         if(user==null)
             throw new ApiException(USER_NOT_FOUND);
+
         if(user.blacklist==null)
             user.blacklist="[]";
         user.blacklist=ArrayNodeHelper.add(user.blacklist,req.target_id);

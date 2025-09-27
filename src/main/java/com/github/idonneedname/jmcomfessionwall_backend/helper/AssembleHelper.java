@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Comment;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Picture;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
+import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.CommentMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PictureMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;

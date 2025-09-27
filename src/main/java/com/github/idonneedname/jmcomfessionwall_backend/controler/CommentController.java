@@ -2,7 +2,6 @@ package com.github.idonneedname.jmcomfessionwall_backend.controler;
 
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Comment;
 import com.github.idonneedname.jmcomfessionwall_backend.request.GetCommentInfoRequest;
-import com.github.idonneedname.jmcomfessionwall_backend.request.GetCommentsOfPostRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import com.github.idonneedname.jmcomfessionwall_backend.service.CommentService;
 import jakarta.annotation.Resource;

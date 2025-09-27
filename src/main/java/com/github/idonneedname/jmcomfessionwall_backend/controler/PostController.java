@@ -59,5 +59,14 @@ public class PostController {
         postService.updatePost(req,api);
         return AjaxResult.success();
     }
-
+    @PatchMapping("/amend/anonymity")
+    public AjaxResult<Void> amendAnonymity(@RequestBody amendAnonymityRequest req, @RequestHeader("X-API-KEY") String api){
+        postService.amendAnonymity(req,api);
+        return AjaxResult.success();
+    }
+    @PatchMapping("/amend/public")
+    public AjaxResult<Void> amendIsPublic(@RequestBody amendIsPublicRequest req, @RequestHeader("X-API-KEY") String api){
+        postService.amendIsPublic(req,api);
+        return AjaxResult.success();
+    }
 }

@@ -198,6 +198,30 @@ public class PostServiceImpl implements PostService {
         }
     }
 
+    @Override
+    public void amendAnonymity(amendAnonymityRequest req, String apiKey) {
+        if(!apiKeyHelper.isVaildApiKey(req.getUser_id(),apiKey))
+            throw new ApiException(INVALID_APIKEY);
+        Post post = postMapper.selectById(req.getPost_id());
+        throwAmendQuestion(post, req.getUser_id());//检查修改时可能存在的一些问题
+        //修改
+        post.anonymity=req.isAnonymity();
+        postMapper.updateById(post);
+
+    }
+
+    @Override
+    public void amendIsPublic(amendIsPublicRequest req, String apiKey) {
+        if(!apiKeyHelper.isVaildApiKey(req.getUser_id(),apiKey))
+            throw new ApiException(INVALID_APIKEY);
+        Post post = postMapper.selectById(req.getPost_id());
+        throwAmendQuestion(post, req.getUser_id());//检查修改时可能存在的一些问题
+        //修改
+        post.anonymity=req.isPublic();
+        postMapper.updateById(post);
+
+    }
+
 }
 
 

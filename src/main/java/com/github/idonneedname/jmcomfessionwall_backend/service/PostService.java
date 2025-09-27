@@ -14,4 +14,6 @@ public interface PostService {
     public void updatePostContent(UpdatePostContentRequest req, String apiKey);
     public void updatePostTitle(UpdatePostTitleRequest req, String apiKey);
     public void updatePost(UpdatePostRequest req, String apiKey);
+    public void amendAnonymity(amendAnonymityRequest req, String apiKey);
+    public void amendIsPublic(amendIsPublicRequest req, String apiKey);
 }

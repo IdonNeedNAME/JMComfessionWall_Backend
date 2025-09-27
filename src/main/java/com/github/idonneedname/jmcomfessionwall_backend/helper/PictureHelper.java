@@ -19,12 +19,10 @@ import java.util.List;
 public class PictureHelper {
     @Resource
     PictureMapper  pictureMapper;
-    @Resource
-    StringHelper strHelper;
     public ArrayList<ArrayList<Integer>> getPixels(int id)//获取图片像素
     {
         if(id==-1) return null;
-        strHelper.log(id);
+        StringHelper.log(id);
         QueryWrapper<Picture> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id", id);
         Picture picture = pictureMapper.selectOne(queryWrapper);
@@ -87,23 +85,16 @@ public class PictureHelper {
         List<Picture> picture = pictureMapper.selectList(queryWrapper);
         Picture  pic=new Picture(pixels,width,height);
         pic.featurecode =featurecode;
-        if(picture == null) {
-            pictureMapper.insert(pic);
-            return pic.getId();
-        }
-        else
-        {
-            for(int i=0;i<picture.size();i++)
-            {
-                if(compare(pic,picture.get(i)))
-                {
+        if (picture != null) {
+            for (int i = 0; i < picture.size(); i++) {
+                if (compare(pic, picture.get(i))) {
                     return picture.get(i).getId();
                 }
 
             }
-            pictureMapper.insert(pic);
-            return pic.getId();
         }
+        pictureMapper.insert(pic);
+        return pic.getId();
     }
     public int getFeatureCode(byte[] pixels,int width,int height)//获取图片的特征码用来粗比对
     {

@@ -23,6 +23,7 @@ public enum ExceptionEnum {
     OVERTIME_LOGIN(1011,"登录超时"),
     BLACKLIST_USER(1012,"你已被拉黑"),
     MEIDIQI(1013,"不能拉黑自己"),
+    LOGIN_EXPIRED(1014,"登录失效"),
     //post类错误
     HOST_ADD_LIKE(2000,"知道你很喜欢你的帖子了，不要再点了啦"),
     POST_NOT_FOUND(1002, "资源不存在"),

@@ -3,10 +3,12 @@ package com.github.idonneedname.jmcomfessionwall_backend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.AdminWhiteList;
+import com.github.idonneedname.jmcomfessionwall_backend.entity.ApiKey;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.*;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.AdminWhiteListMapper;
+import com.github.idonneedname.jmcomfessionwall_backend.mapper.ApiKeyMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PictureMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.UserMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.request.RegAndLog.LoginRequest;
@@ -20,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.*;
 
@@ -28,13 +31,15 @@ import static com.github.idonneedname.jmcomfessionwall_backend.constant.Exceptio
 @Slf4j
 public class UserServiceImpl implements UserService {
     @Resource
-    private final UserMapper userMapper;
+    private UserMapper userMapper;
     @Resource
-    private final PictureHelper pictureHelper;
+    private PictureHelper pictureHelper;
     @Resource
-    private final PictureMapper pictureMapper;
+    private PictureMapper pictureMapper;
     @Resource
-    private final AdminWhiteListMapper  adminWhiteListMapper;
+    private AdminWhiteListMapper  adminWhiteListMapper;
+    @Resource
+    private ApiKeyMapper apiKeyMapper;
     @Resource
     AssembleHelper  assembleHelper;
     @Resource
@@ -48,17 +53,26 @@ public class UserServiceImpl implements UserService {
     public AjaxResult<User> login(LoginRequest req){
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("username",req.getUsername()).eq("password",req.getPassword());
-
         User user = userMapper.selectOne(queryWrapper);
         if(user==null){
             throw new ApiException(WRONG_USERNAME_OR_PASSWORD);
         }
         else {
-             assembleHelper.assemble(user);
-             AjaxResult<User> response=AjaxResult.success(user);
-             String api=apiKeyHelper.genKey(user.id);
-             response.setMsg(api);
-             return response;
+            assembleHelper.assemble(user);
+            AjaxResult<User> response=AjaxResult.success(user);
+            String api=apiKeyHelper.genKey(user.id);
+            ApiKey apiKey=apiKeyMapper.selectById(user.id);
+            if (apiKey==null) {
+                apiKey=new ApiKey();
+                apiKey.apikey = api;
+                apiKey.id = user.id;
+                apiKeyMapper.insert(apiKey);
+            }else {
+                apiKey.apikey = api;
+                apiKeyMapper.updateById(apiKey);
+            }
+            response.setMsg(api);
+            return response;
         }
     }
     public boolean isUserNameValid(String username){
@@ -164,14 +178,12 @@ public class UserServiceImpl implements UserService {
             throw new ApiException(INVALID_PASSWORD);
     }
     @Override
-    public AjaxResult<User> getUserInformation(GetUserInfoRequest req, String apiKey)
+    public AjaxResult<User> getUserInformation(int target_id, String apiKey)
     {
-        //log.info(apiKey);
-        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
-            throw new ApiException(INVALID_APIKEY);
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",req.target_id);
-        User user = userMapper.selectOne(queryWrapper);
+        log.info(apiKey);
+        int user_id=apiKeyHelper.getUserId(apiKey);
+        log.info("user_id:"+user_id);
+        User user = userMapper.selectById(target_id);
         if(user==null)
             throw new ApiException(USER_NOT_FOUND);
         else

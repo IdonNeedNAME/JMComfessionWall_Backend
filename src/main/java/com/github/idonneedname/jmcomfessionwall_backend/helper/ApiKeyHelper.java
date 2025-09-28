@@ -18,6 +18,10 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Objects;
+
+import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.INVALID_APIKEY;
+import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.USER_NOT_FOUND;
 
 @Service
 public class ApiKeyHelper {
@@ -27,6 +31,16 @@ public class ApiKeyHelper {
     String secretString = "ushfgyA32u7yfh36FroHS256Algo87uijh"; // 32 字节
     byte[] keyBytes = secretString.getBytes(StandardCharsets.UTF_8);
     SecretKey key = new SecretKeySpec(keyBytes, "HmacSHA256");
+    //直接用这个就好了，代替了parseApiKey
+    public int getUserId(String api){
+        int user_id=parseApiKey(api);
+        ApiKey apiKey=apiKeyMapper.selectById(user_id);
+        if(apiKey==null)
+            throw new ApiException(USER_NOT_FOUND);
+        if (!Objects.equals(apiKey.getApikey(), api))
+            throw new ApiException(INVALID_APIKEY);
+        return parseApiKey(api);
+    }
     public int parseApiKey(String apiKey){
         int ans;
         Jws<Claims> claimsJws;

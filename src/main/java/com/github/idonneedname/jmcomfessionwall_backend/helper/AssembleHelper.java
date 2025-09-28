@@ -31,10 +31,8 @@ public class AssembleHelper {
     PostMapper postMapper;
     public void assemble(Picture picture,int id)//配置图片具体内容
     {
-        QueryWrapper<Picture> wrapper = new QueryWrapper<>();
-        wrapper.eq("id",id);
         Picture pic;
-        pic =pictureMapper.selectOne(wrapper);
+        pic =pictureMapper.selectById(id);
         if(pic==null)
         {
             picture.width=Constant.defaultPicture.width;

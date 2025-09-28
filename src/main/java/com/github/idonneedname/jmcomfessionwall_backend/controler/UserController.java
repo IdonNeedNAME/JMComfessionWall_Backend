@@ -48,12 +48,12 @@ public class UserController {
         return userService.uploadPortrait(req,api);
     }
     @PostMapping("/blacklist")
-    public AjaxResult<String> addBlacklist(@RequestBody BlackListRequest req, @RequestHeader("X-API-KEY") String api){
+    public AjaxResult<String> getUserInfo(@RequestBody BlackListRequest req, @RequestHeader("X-API-KEY") String api){
         return userService.addBlackList(req,api);
     }
-    @GetMapping("")
-    public AjaxResult<User> addBlacklist(@RequestBody GetUserInfoRequest req, @RequestHeader("X-API-KEY") String api){
-        return userService.getUserInformation(req,api);
+    @GetMapping("/{id}")
+    public AjaxResult<User> getUserInfo(@PathVariable("id") int id, @RequestHeader("X-API-KEY") String api){
+        return userService.getUserInformation(id,api);
     }
     @DeleteMapping("/deblacklist")
     public AjaxResult<String> deleteBlacklist(@RequestBody BlackListRequest req, @RequestHeader("X-API-KEY") String api){

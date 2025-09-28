@@ -10,7 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class UpdatePostRequest {
     private int user_id;
     private int post_id;
-    private String newcontent;
+    private String newContent;
     public MultipartFile[] pictures;
-    private String newtitle;
+    private String newTitle;
+    private boolean anonymity;
+    private boolean isPublic;
 }

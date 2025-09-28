@@ -4,24 +4,28 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
+import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.ApiKeyHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.AssembleHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.PictureHelper;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.StringHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PictureMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;
+import com.github.idonneedname.jmcomfessionwall_backend.mapper.UserMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.request.*;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import com.github.idonneedname.jmcomfessionwall_backend.service.PostService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 
 import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.*;
+import static com.github.idonneedname.jmcomfessionwall_backend.helper.ArrayNodeHelper.*;
 
 
 @Service
@@ -38,20 +42,31 @@ public class PostServiceImpl implements PostService {
     private AssembleHelper  assembleHelper;
     @Resource
     private ApiKeyHelper apiKeyHelper;
+    @Resource
+    private UserMapper userMapper;
 
     //检查修改时可能存在的一些问题
     public void throwAmendQuestion(Post post,int user_id){
         if (post == null) {
-            throw new ApiException(RESOURCE_NOT_FOUND);
+            throw new ApiException(POST_NOT_FOUND);
         }
         /*
         还要加一个举报不允许改
         例:if (post.report==1){
-            throw new ApiException(ExceptionEnum.RESOURCE_reported);
+            throw new ApiException(RESOURCE_reported);
         }
         */
         if (post.host!=user_id) {
             throw new ApiException(PERMISSION_NOT_ALLOWED);
+        }
+    }
+    public void isInBlackList(Post post,int user_id){
+        if (post == null) {
+            throw new ApiException(POST_NOT_FOUND);
+        }
+        User user=userMapper.selectById(post.host);
+        if (idInArray(user.blacklist,user_id)!=-1) {
+            throw new ApiException(POST_NOT_FOUND);
         }
     }
     public boolean isTitleValid(String title)
@@ -152,79 +167,45 @@ public class PostServiceImpl implements PostService {
         return AjaxResult.success(post);
     }
     @Override
-    public void updatePostContent(UpdatePostContentRequest req, String apiKey){
-        if(!apiKeyHelper.isVaildApiKey(req.getUser_id(),apiKey))
-            throw new ApiException(INVALID_APIKEY);
-        if(isContentValid(req.getNewcontent())){
-            Post post = postMapper.selectById(req.getPost_id());
-
-            throwAmendQuestion(post,req.getUser_id());//检查修改时可能存在的一些问题
-            //修改
-            post.content=req.getNewcontent();
-            post.picture=getPicture(req.pictures);
-            postMapper.updateById(post);
-        }
-
-    }
-
-    @Override
-    public void updatePostTitle(UpdatePostTitleRequest req, String apiKey) {
-        if(!apiKeyHelper.isVaildApiKey(req.getUser_id(),apiKey))
-            throw new ApiException(INVALID_APIKEY);
-        if(isTitleValid(req.getNewtitle())){
-            Post post = postMapper.selectById(req.getPost_id());
-
-            throwAmendQuestion(post,req.getUser_id());//检查修改时可能存在的一些问题
-            //修改
-            post.title=req.getNewtitle();
-            postMapper.updateById(post);
-        }
-    }
-
-    @Override
     public void updatePost(UpdatePostRequest req, String apiKey) {
-        if(!apiKeyHelper.isVaildApiKey(req.getUser_id(),apiKey))
-            throw new ApiException(INVALID_APIKEY);
-        if(isTitleValid(req.getNewtitle())) {
+        req.setUser_id(apiKeyHelper.parseApiKey(apiKey));
+        if(isTitleValid(req.getNewTitle())&&isContentValid(req.getNewContent())) {
             Post post = postMapper.selectById(req.getPost_id());
-
             throwAmendQuestion(post, req.getUser_id());//检查修改时可能存在的一些问题
             //修改
-            post.title=req.getNewtitle();
-            post.content=req.getNewcontent();
+            post.title=req.getNewTitle();
+            post.content=req.getNewContent();
             post.picture=getPicture(req.pictures);
+            post.anonymity=req.isAnonymity();
+            post.ispublic=req.isPublic();
             postMapper.updateById(post);
 
         }
     }
-
     @Override
-    public void amendAnonymity(amendAnonymityRequest req, String apiKey) {
-        if(!apiKeyHelper.isVaildApiKey(req.getUser_id(),apiKey))
-            throw new ApiException(INVALID_APIKEY);
-        Post post = postMapper.selectById(req.getPost_id());
-        throwAmendQuestion(post, req.getUser_id());//检查修改时可能存在的一些问题
-        //修改
-        post.anonymity=req.isAnonymity();
+    public void postLike(int post_id, String apiKey) {
+        int user_id=apiKeyHelper.parseApiKey(apiKey);
+        Post post = postMapper.selectById(post_id);
+        User user = userMapper.selectById(user_id);
+        if (user==null)
+            throw new ApiException(USER_NOT_FOUND);
+        isInBlackList(post,user_id);
+        StringHelper.log(user_id);
+        StringHelper.log(post.host);
+        if(user_id==post.host)
+            throw new ApiException(HOST_ADD_LIKE);
+        if(idInArray(post.likelist,user_id)!=-1)
+            post.likelist=delete(post.likelist,post_id);
+        else
+            post.likelist=add(post.likelist,post_id);
         postMapper.updateById(post);
-
     }
 
     @Override
-    public void amendIsPublic(amendIsPublicRequest req, String apiKey) {
-        if(!apiKeyHelper.isVaildApiKey(req.getUser_id(),apiKey))
-            throw new ApiException(INVALID_APIKEY);
-        Post post = postMapper.selectById(req.getPost_id());
-        throwAmendQuestion(post, req.getUser_id());//检查修改时可能存在的一些问题
-        //修改
-        post.anonymity=req.isPublic();
-        postMapper.updateById(post);
-
+    public void postDelete(int post_id, String apiKey) {
+        int user_id=apiKeyHelper.parseApiKey(apiKey);
+        Post post = postMapper.selectById(post_id);
+        throwAmendQuestion(post,user_id);
+        postMapper.deleteById(post_id);
     }
-
 }
-
-
-
-
-

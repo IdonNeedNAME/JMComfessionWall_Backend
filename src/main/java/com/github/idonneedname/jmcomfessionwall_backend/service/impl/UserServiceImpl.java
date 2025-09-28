@@ -49,9 +49,7 @@ public class UserServiceImpl implements UserService {
         }
         else {
              user._blacklist= ArrayNodeHelper.translateToArray(user.blacklist);
-             QueryWrapper<Picture> pictureQueryWrapper = new QueryWrapper<>();
-             pictureQueryWrapper.eq("id",user.pictureref);
-             user.portrait=pictureMapper.selectOne(pictureQueryWrapper);
+             user.portrait=pictureMapper.selectById(user.pictureref);
              if(user.portrait!=null)
                  user.portrait.pixel=pictureHelper.getPixels(user.pictureref);
              AjaxResult<User> response=AjaxResult.success(user);

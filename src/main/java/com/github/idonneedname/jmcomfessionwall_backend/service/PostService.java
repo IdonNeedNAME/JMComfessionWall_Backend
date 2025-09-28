@@ -11,9 +11,7 @@ public interface PostService {
     public AjaxResult<String> uploadPost(UploadPostRequest req,String apiKey);
     public AjaxResult<List<Post>> getPostOfUser(GetPostOfUserRequest req, String apiKey);
     public AjaxResult<Post> getPostInfo(GetPostInfoRequest req, String apiKey);
-    public void updatePostContent(UpdatePostContentRequest req, String apiKey);
-    public void updatePostTitle(UpdatePostTitleRequest req, String apiKey);
     public void updatePost(UpdatePostRequest req, String apiKey);
-    public void amendAnonymity(amendAnonymityRequest req, String apiKey);
-    public void amendIsPublic(amendIsPublicRequest req, String apiKey);
+    void postLike(int post_id, String apiKey);
+    void postDelete(int post_id, String apiKey);
 }

@@ -1,9 +1,6 @@
 package com.github.idonneedname.jmcomfessionwall_backend.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,6 +39,7 @@ public class Post {
     public String content;
     public int depth;
     public boolean anonymity;
+    @TableLogic
     public boolean hidden;
     public boolean ispublic;
     //下面三个实质是个存放id的List，用ArrayNodeHelper里的方法操作
@@ -51,6 +49,7 @@ public class Post {
     public String picture;//图片列表
     @JsonIgnore
     public String subcomment;//子评论
+
 
     @TableField(exist = false)
     public ArrayList<Comment> subcomments;

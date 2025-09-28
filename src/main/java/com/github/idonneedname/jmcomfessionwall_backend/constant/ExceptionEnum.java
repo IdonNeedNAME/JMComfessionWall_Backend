@@ -24,6 +24,7 @@ public enum ExceptionEnum {
     BLACKLIST_USER(1012,"你已被拉黑"),
     MEIDIQI(1013,"不能拉黑自己"),
     //post类错误
+    HOST_ADD_LIKE(2000,"知道你很喜欢你的帖子了，不要再点了啦"),
     POST_NOT_FOUND(1002, "资源不存在"),
     COMMENT_NOT_FOUND(1002, "资源不存在"),
     CONTENT_TOO_LONG(2003, "帖子内容过长"),

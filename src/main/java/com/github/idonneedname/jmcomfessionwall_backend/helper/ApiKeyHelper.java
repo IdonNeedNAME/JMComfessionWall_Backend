@@ -20,7 +20,7 @@ public class ApiKeyHelper {
         int ans=0;
         if(apiKey.length()<=2)
             return -1;
-        for(int i=1;i<apiKey.length();i++)
+        for(int i=2;i<apiKey.length();i++)
         {
             ans*=10;
             ans+=((int)apiKey.charAt(i)-48);
@@ -30,9 +30,7 @@ public class ApiKeyHelper {
     public boolean isVaildApiKey(int id,String apiKey){
         if(apiKey.equals("ak1145141919810"))
             return true;
-        QueryWrapper<ApiKey> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",id);
-        ApiKey api=apiKeyMapper.selectOne(queryWrapper);
+        ApiKey api=apiKeyMapper.selectById(id);
         if(api==null)
             return false;//说明这个id没有登记
         if(apiKey.equals(api.apikey))
@@ -40,7 +38,7 @@ public class ApiKeyHelper {
             if(Instant.now().toEpochMilli()-api.lastoperatetime>keyRemainTime)
                 throw new ApiException(ExceptionEnum.OVERTIME_LOGIN);
             api.lastoperatetime=Instant.now().toEpochMilli();
-            apiKeyMapper.update(api,queryWrapper);
+            apiKeyMapper.updateById(api);
             return true;
         }
         else

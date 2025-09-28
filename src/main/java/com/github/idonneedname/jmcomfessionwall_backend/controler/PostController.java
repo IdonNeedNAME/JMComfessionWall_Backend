@@ -2,13 +2,14 @@ package com.github.idonneedname.jmcomfessionwall_backend.controler;
 
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Comment;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.StringHelper;
+import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.request.*;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import com.github.idonneedname.jmcomfessionwall_backend.service.impl.CommentServiceImpl;
 import com.github.idonneedname.jmcomfessionwall_backend.service.impl.PostServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,8 @@ public class PostController {
     private PostServiceImpl postService;
     @Resource
     private CommentServiceImpl commentService;
+    @Autowired
+    private PostMapper postMapper;
 
     @PostMapping(
             value = "/upload",
@@ -44,29 +47,20 @@ public class PostController {
     {
         return commentService.getCommentsOfPost(req,api);
     }
-    @PatchMapping("/amend/content")
-    public AjaxResult<Void> updatePostContest(UpdatePostContentRequest req, @RequestHeader("X-API-KEY") String api) {
-        postService.updatePostContent(req,api);
-        return AjaxResult.success();
-    }
-    @PatchMapping("/amend/title")
-    public AjaxResult<Void> updatePostTitle(@RequestBody UpdatePostTitleRequest req, @RequestHeader("X-API-KEY") String api){
-        postService.updatePostTitle(req,api);
-        return AjaxResult.success();
-    }
-    @PatchMapping("/amend")
-    public AjaxResult<Void> updatePost(UpdatePostRequest req, @RequestHeader("X-API-KEY") String api){
+    @PatchMapping("/{postId}")
+    public AjaxResult<Void> updatePost(@PathVariable("postId") int id,UpdatePostRequest req, @RequestHeader("X-API-KEY") String api){
+        req.setPost_id(id);
         postService.updatePost(req,api);
         return AjaxResult.success();
     }
-    @PatchMapping("/amend/anonymity")
-    public AjaxResult<Void> amendAnonymity(@RequestBody amendAnonymityRequest req, @RequestHeader("X-API-KEY") String api){
-        postService.amendAnonymity(req,api);
+    @PostMapping("/{postId}/like")
+    public AjaxResult<Void> postLike(@PathVariable("postId") int id,@RequestHeader("X-API-KEY") String api){
+        postService.postLike(id,api);
         return AjaxResult.success();
     }
-    @PatchMapping("/amend/public")
-    public AjaxResult<Void> amendIsPublic(@RequestBody amendIsPublicRequest req, @RequestHeader("X-API-KEY") String api){
-        postService.amendIsPublic(req,api);
+    @DeleteMapping("/{postId}")
+    public AjaxResult<Void> postDelete(@PathVariable("postId") int id,@RequestHeader("X-API-KEY") String api){
+        postService.postDelete(id,api);
         return AjaxResult.success();
     }
 }

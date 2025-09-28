@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Comment {
-    public Comment(int id, int host, String content, int depth, boolean hidden, String likelist, String subcomment) {
+    public Comment(int id, int host, String content, int depth, boolean hidden, String likelist, String subcomment,int likes,int comments,int dadid,int dadtype) {
         this.id = id;
         this.host = host;
         this.content = content;
@@ -28,6 +28,10 @@ public class Comment {
         this.hidden = hidden;
         this.likelist = likelist;
         this.subcomment = subcomment;
+        this.likes = likes;
+        this.dadid = dadid;
+        this.dadtype = dadtype;
+        this.comments = comments;
     }
 
     @TableId(type = IdType.AUTO)
@@ -37,7 +41,10 @@ public class Comment {
     public int depth;
     public boolean hidden;
 
-
+    @JsonIgnore
+    public int dadtype;
+    @JsonIgnore
+    public int dadid;
     //下面两个实质是个存放id的List，用ArrayNodeHelper里的方法操作
     @JsonIgnore
     public String likelist;//点赞人
@@ -48,10 +55,9 @@ public class Comment {
     public List<Comment> subcomments;
     @TableField(exist = false)
     public boolean liked;
-    @TableField(exist = false)
+
     public int likes;
-    @TableField(exist = false)
-    public int commentCount;
+    public int comments;
 
     public void setContent(String content) {
         if(content==null||content.isEmpty()) {throw new ApiException(ExceptionEnum.NULL_CONTENT);}

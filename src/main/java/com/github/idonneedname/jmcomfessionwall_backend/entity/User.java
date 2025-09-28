@@ -29,14 +29,12 @@ public class User {
     @TableId(type= IdType.AUTO)
     public int id;
     public String username;
+    @JsonIgnore
     public String password;
     public String name;
     public int type;
     @JsonIgnore
     public String blacklist;
-    @TableField(exist=false)
-    @JsonProperty("blacklist")
-    public ArrayList<Integer> _blacklist;//这是用于响应体的字段
     @JsonIgnore
     public int pictureref;//头像的id
     @TableField(exist=false)

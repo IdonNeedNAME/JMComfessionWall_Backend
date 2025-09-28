@@ -5,28 +5,53 @@ import com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.ApiKey;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.ApiKeyMapper;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import io.jsonwebtoken.security.Keys;
+import javax.crypto.SecretKey;
 
+import javax.crypto.SecretKey;
 import java.time.Instant;
+import java.util.Date;
 
 @Service
 public class ApiKeyHelper {
     @Resource
     public ApiKeyMapper apiKeyMapper;
     public static int keyRemainTime=1000*60*60*24;//一天超时
+    static SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     public int parseApiKey(String apiKey){
-        StringHelper.log(apiKey);
-        int ans=0;
-        if(apiKey.length()<=2)
-            return -1;
-        for(int i=2;i<apiKey.length();i++)
-        {
-            ans*=10;
-            ans+=((int)apiKey.charAt(i)-48);
+        int ans;
+        Jws<Claims> claimsJws;
+        Claims claims;
+        try {
+            claimsJws = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(apiKey);
         }
+        catch (SignatureException ex) {
+            throw new ApiException(ExceptionEnum.INVALID_APIKEY);
+        }
+        catch (ExpiredJwtException ex) {
+
+            throw new ApiException(ExceptionEnum.OVERTIME_LOGIN);
+        }
+        claims = claimsJws.getBody();
+        ans=claims.get("id",Integer.class);
         return ans;
-    }//将就一下先
+    }//判断前端返回的apikey是否合法
+    public String genKey(int id)
+    {
+        String jws = Jwts.builder().setSubject("LaoDengBieYaLiWo")
+                .claim("id",id)
+                .setExpiration(new Date(System.currentTimeMillis() + 999999999))//超长过期时长
+                .signWith(key)
+                .compact();
+        return jws;
+    }//生成一个apikey
     public boolean isVaildApiKey(int id,String apiKey){
         if(apiKey.equals("ak1145141919810"))
             return true;
@@ -50,7 +75,7 @@ public class ApiKeyHelper {
         String apiKey="ak"+random;
         StringHelper.log(apiKey);
         return apiKey;
-    }//生成一个apikey
+    }//生成一个apikey(弃用)
     public String trySet(int id)
     {
         QueryWrapper<ApiKey> queryWrapper=new QueryWrapper<>();
@@ -71,5 +96,5 @@ public class ApiKeyHelper {
             apiKeyMapper.update(api,queryWrapper);
         }
         return api.getApikey();
-    }//设置apikey
+    }//设置apikey（弃用）
 }

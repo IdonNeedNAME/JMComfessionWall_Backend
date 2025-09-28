@@ -17,7 +17,7 @@ public class Post {
     {}
     public Post(int id,int host,String title,
     String content,int depth,boolean anonymity,boolean hidden,boolean isPublic,
-    String likelist,String picture,String subcomment)
+    String likelist,String picture,String subcomment,int comments,int likes)
     {
         this.id = id;
         this.host=host;
@@ -30,6 +30,8 @@ public class Post {
         this.likelist=likelist;
         this.picture=picture;
         this.subcomment=subcomment;
+        this.likes=likes;
+        this.comments=comments;
     }
 
     @TableId(type= IdType.AUTO)
@@ -49,6 +51,8 @@ public class Post {
     public String picture;//图片列表
     @JsonIgnore
     public String subcomment;//子评论
+    public int likes;
+    public int comments;
 
 
     @TableField(exist = false)
@@ -57,8 +61,6 @@ public class Post {
     public ArrayList<Picture> pictures;
     @TableField(exist = false)
     public boolean liked;
-    @TableField(exist = false)
-    public int likes;
-    @TableField(exist = false)
-    public int commentCount;
+
+
 }

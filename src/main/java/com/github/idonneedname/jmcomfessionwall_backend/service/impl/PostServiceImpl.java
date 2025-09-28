@@ -100,7 +100,7 @@ public class PostServiceImpl implements PostService {
                 throw new ApiException(PICTURE_TOO_LONG);
             int id;
             for (int i = 0; i < pictures.length; i++) {
-                id = pictureHelper.storeOne(pictures[i]);//存储图片返回图片的索引，空的图片传回-1
+                id = pictureHelper.storePicture(pictures[i]);//存储图片返回图片的索引，空的图片传回-1
                 if(id==-1) continue;
                 array.add(id);//把索引加进链表
             }

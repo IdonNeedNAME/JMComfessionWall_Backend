@@ -5,12 +5,13 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @TableName(value = "report")
 @Data
 @Builder
+@NoArgsConstructor
 public class Report {
-    public Report(){}
     public Report(int id,int targetype,String content,int status,int result,int targetid,String reason){
         this.id = id;
         this.targetype = targetype;

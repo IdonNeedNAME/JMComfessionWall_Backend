@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.*;
 
 @Service
@@ -38,6 +40,9 @@ public class UserServiceImpl implements UserService {
     StringHelper stringHelper;
     @Resource
     ApiKeyHelper apiKeyHelper;
+    @Resource
+    FileStorageService  fileStorageService;
+
     @Override
     public AjaxResult<User> login(LoginRequest req){
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -48,12 +53,9 @@ public class UserServiceImpl implements UserService {
             throw new ApiException(WRONG_USERNAME_OR_PASSWORD);
         }
         else {
-             user._blacklist= ArrayNodeHelper.translateToArray(user.blacklist);
-             user.portrait=pictureMapper.selectById(user.pictureref);
-             if(user.portrait!=null)
-                 user.portrait.pixel=pictureHelper.getPixels(user.pictureref);
+             assembleHelper.assemble(user);
              AjaxResult<User> response=AjaxResult.success(user);
-             String api=apiKeyHelper.trySet(user.id);
+             String api=apiKeyHelper.genKey(user.id);
              response.setMsg(api);
              return response;
         }
@@ -176,7 +178,6 @@ public class UserServiceImpl implements UserService {
             assembleHelper.assemble(user);
             return AjaxResult.success(user);
         }
-
     }
     @Override
     public AjaxResult<String> uploadPortrait(UploadPortraitRequest req,String apiKey)
@@ -189,6 +190,14 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.selectOne(queryWrapper);
         if(user==null)
             throw new ApiException(USER_NOT_FOUND);
+        try
+        {
+            fileStorageService.storeFile(req.picture);
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
         user.pictureref=pictureHelper.storeOne(req.picture);
         userMapper.update(user,queryWrapper);
         return AjaxResult.success(null);
@@ -214,6 +223,8 @@ public class UserServiceImpl implements UserService {
     {
         if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
+        if(req.target_id==req.user_id)
+           throw new ApiException(MEIDIQI);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",req.user_id);
         User user = userMapper.selectOne(queryWrapper);

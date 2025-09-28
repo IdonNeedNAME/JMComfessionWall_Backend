@@ -1,6 +1,7 @@
 package com.github.idonneedname.jmcomfessionwall_backend.helper;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.idonneedname.jmcomfessionwall_backend.constant.Constant;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Comment;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Picture;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
@@ -12,7 +13,6 @@ import com.github.idonneedname.jmcomfessionwall_backend.mapper.UserMapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
 
 import java.util.ArrayList;
 
@@ -33,20 +33,21 @@ public class AssembleHelper {
     {
         QueryWrapper<Picture> wrapper = new QueryWrapper<>();
         wrapper.eq("id",id);
-        Picture pic=pictureMapper.selectOne(wrapper);
-        if(pic==null) return;
-        picture.id=id;
-        picture.width=pic.width;
-        picture.height=pic.height;
-        picture.pixel= pictureHelper.getPixels(id);
+        Picture pic;
+        pic =pictureMapper.selectOne(wrapper);
+        if(pic==null)
+        {
+            picture.width=Constant.defaultPicture.width;
+            picture.height=Constant.defaultPicture.height;
+            picture.url=Constant.baseUrl+Constant.defaultPicture.name;
+            return ;
+        }
+        picture.width=pic.getWidth();
+        picture.height=pic.getHeight();
+        picture.url= Constant.baseUrl+pic.name;
     }
     public void assemble(User user)//配置用户信息具体内容
     {
-        if(user.blacklist!=null)
-            user._blacklist= ArrayNodeHelper.translateToArray(user.blacklist);
-        else
-            user._blacklist=null;
-        user.password=null;
         if(user.portrait==null)
         {
             user.portrait=new Picture();
@@ -54,7 +55,7 @@ public class AssembleHelper {
         }
     }
     //配置帖子具体内容
-    public void assemble(Post post, int target, boolean shouldInitialComments)//填-1表示没有
+    public void assemble(Post post, int visitor, boolean shouldInitialComments)//填-1表示没有
     {
         //点赞
         ArrayList<Integer> like= ArrayNodeHelper.translateToArray(post.likelist);
@@ -62,9 +63,9 @@ public class AssembleHelper {
         {
             post.likes=like.size();
             post.liked=false;
-            if(target!=-1)
+            if(visitor!=-1)
             {
-                if(ArrayNodeHelper.idInArray(post.likelist,target)!=-1)
+                if(ArrayNodeHelper.idInArray(post.likelist,visitor)!=-1)
                     post.liked=true;
             }
         }
@@ -85,7 +86,7 @@ public class AssembleHelper {
             if(comments!=null&&!comments.isEmpty())
             {
 
-                post.commentCount=0;
+                post.comments =0;
                 if(post.depth<3)
                 {
                     post.subcomments=new ArrayList<>();
@@ -101,10 +102,10 @@ public class AssembleHelper {
                             continue;
                         if(shouldInitialComments)
                         {
-                            assemble(subcomment,target);
+                            assemble(subcomment,visitor);
                             post.subcomments.add(subcomment);
                         }
-                        post.commentCount++;
+                        post.comments++;
                     }
                 }
 
@@ -130,7 +131,7 @@ public class AssembleHelper {
         if(comments!=null)
         {
             comment.subcomments=new ArrayList<>();
-            comment.commentCount=comments.size();
+            comment.comments =comments.size();
             if(comment.depth<=2)
             {
                 int sub;

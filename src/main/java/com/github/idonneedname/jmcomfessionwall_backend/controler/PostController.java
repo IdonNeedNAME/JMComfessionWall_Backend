@@ -3,7 +3,11 @@ package com.github.idonneedname.jmcomfessionwall_backend.controler;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Comment;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;
-import com.github.idonneedname.jmcomfessionwall_backend.request.*;
+import com.github.idonneedname.jmcomfessionwall_backend.request.comment.GetCommentsOfPostRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.comment.UploadCommentRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.post.GetPostInfoRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.post.UpdatePostRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.post.UploadPostRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import com.github.idonneedname.jmcomfessionwall_backend.service.impl.CommentServiceImpl;
 import com.github.idonneedname.jmcomfessionwall_backend.service.impl.PostServiceImpl;
@@ -48,7 +52,7 @@ public class PostController {
         return commentService.getCommentsOfPost(req,api);
     }
     @PatchMapping("/{postId}")
-    public AjaxResult<Void> updatePost(@PathVariable("postId") int id,UpdatePostRequest req, @RequestHeader("X-API-KEY") String api){
+    public AjaxResult<Void> updatePost(@PathVariable("postId") int id, UpdatePostRequest req, @RequestHeader("X-API-KEY") String api){
         req.setPost_id(id);
         postService.updatePost(req,api);
         return AjaxResult.success();

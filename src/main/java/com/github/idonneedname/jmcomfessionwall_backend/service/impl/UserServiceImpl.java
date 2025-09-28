@@ -3,14 +3,15 @@ package com.github.idonneedname.jmcomfessionwall_backend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.AdminWhiteList;
-import com.github.idonneedname.jmcomfessionwall_backend.entity.Picture;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.*;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.AdminWhiteListMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PictureMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.UserMapper;
-import com.github.idonneedname.jmcomfessionwall_backend.request.*;
+import com.github.idonneedname.jmcomfessionwall_backend.request.RegAndLog.LoginRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.RegAndLog.RegisterRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.user.*;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import com.github.idonneedname.jmcomfessionwall_backend.service.UserService;
 import jakarta.annotation.Resource;
@@ -163,7 +164,7 @@ public class UserServiceImpl implements UserService {
             throw new ApiException(INVALID_PASSWORD);
     }
     @Override
-    public AjaxResult<User> getUserInformation(GetUserInfoRequest req,String apiKey)
+    public AjaxResult<User> getUserInformation(GetUserInfoRequest req, String apiKey)
     {
         //log.info(apiKey);
         if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
@@ -180,7 +181,7 @@ public class UserServiceImpl implements UserService {
         }
     }
     @Override
-    public AjaxResult<String> uploadPortrait(UploadPortraitRequest req,String apiKey)
+    public AjaxResult<String> uploadPortrait(UploadPortraitRequest req, String apiKey)
     {
         StringHelper.log(req.user_id);
         if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))

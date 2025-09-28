@@ -2,7 +2,9 @@ package com.github.idonneedname.jmcomfessionwall_backend.controler;
 
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
-import com.github.idonneedname.jmcomfessionwall_backend.request.*;
+import com.github.idonneedname.jmcomfessionwall_backend.request.RegAndLog.LoginRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.RegAndLog.RegisterRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.user.*;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import com.github.idonneedname.jmcomfessionwall_backend.service.impl.PostServiceImpl;
 import com.github.idonneedname.jmcomfessionwall_backend.service.impl.UserServiceImpl;
@@ -31,7 +33,7 @@ public class UserController {
         return userService.login(req);
     }
     @PatchMapping("/amend/name")
-    public AjaxResult<String> amendName(@RequestBody AmendNameRequest req,@RequestHeader("X-API-KEY") String api){
+    public AjaxResult<String> amendName(@RequestBody AmendNameRequest req, @RequestHeader("X-API-KEY") String api){
         return userService.amendName(req,api);
     }
     @PatchMapping("/amend/password")

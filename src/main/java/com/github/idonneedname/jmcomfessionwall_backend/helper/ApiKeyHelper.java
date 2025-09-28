@@ -13,7 +13,10 @@ import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Date;
 
 @Service
@@ -21,7 +24,9 @@ public class ApiKeyHelper {
     @Resource
     public ApiKeyMapper apiKeyMapper;
     public static int keyRemainTime=1000*60*60*24;//一天超时
-    static SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    String secretString = "ushfgyA32u7yfh36FroHS256Algo87uijh"; // 32 字节
+    byte[] keyBytes = secretString.getBytes(StandardCharsets.UTF_8);
+    SecretKey key = new SecretKeySpec(keyBytes, "HmacSHA256");
     public int parseApiKey(String apiKey){
         int ans;
         Jws<Claims> claimsJws;
@@ -33,7 +38,7 @@ public class ApiKeyHelper {
                     .parseClaimsJws(apiKey);
         }
         catch (SignatureException ex) {
-            throw new ApiException(ExceptionEnum.INVALID_APIKEY);
+            throw new SignatureException(ex.getMessage());
         }
         catch (ExpiredJwtException ex) {
 

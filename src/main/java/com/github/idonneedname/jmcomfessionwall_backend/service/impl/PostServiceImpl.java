@@ -13,13 +13,15 @@ import com.github.idonneedname.jmcomfessionwall_backend.helper.StringHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PictureMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.UserMapper;
-import com.github.idonneedname.jmcomfessionwall_backend.request.*;
+import com.github.idonneedname.jmcomfessionwall_backend.request.post.GetPostInfoRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.post.UpdatePostRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.post.UploadPostRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.user.GetPostOfUserRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import com.github.idonneedname.jmcomfessionwall_backend.service.PostService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
@@ -113,7 +115,7 @@ public class PostServiceImpl implements PostService {
         return picture;
     }
     @Override
-    public AjaxResult<String> uploadPost(UploadPostRequest req,String apiKey)
+    public AjaxResult<String> uploadPost(UploadPostRequest req, String apiKey)
     {
         if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
@@ -136,7 +138,7 @@ public class PostServiceImpl implements PostService {
         return  AjaxResult.fail(null);
     }
     @Override
-    public AjaxResult<List<Post>> getPostOfUser(GetPostOfUserRequest req,String apiKey)
+    public AjaxResult<List<Post>> getPostOfUser(GetPostOfUserRequest req, String apiKey)
     {
         if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);
@@ -152,7 +154,7 @@ public class PostServiceImpl implements PostService {
         return AjaxResult.success(posts);
     }
     @Override
-    public AjaxResult<Post> getPostInfo(GetPostInfoRequest req,String apiKey)
+    public AjaxResult<Post> getPostInfo(GetPostInfoRequest req, String apiKey)
     {
         if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
             throw new ApiException(INVALID_APIKEY);

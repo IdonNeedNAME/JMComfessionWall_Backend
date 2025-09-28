@@ -1,4 +1,4 @@
-package com.github.idonneedname.jmcomfessionwall_backend.request;
+package com.github.idonneedname.jmcomfessionwall_backend.request.Report;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,9 +1,9 @@
 package com.github.idonneedname.jmcomfessionwall_backend.service;
 
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Comment;
-import com.github.idonneedname.jmcomfessionwall_backend.request.GetCommentInfoRequest;
-import com.github.idonneedname.jmcomfessionwall_backend.request.GetCommentsOfPostRequest;
-import com.github.idonneedname.jmcomfessionwall_backend.request.UploadCommentRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.comment.GetCommentInfoRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.comment.GetCommentsOfPostRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.comment.UploadCommentRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 
 import java.util.ArrayList;

@@ -1,7 +1,9 @@
 package com.github.idonneedname.jmcomfessionwall_backend.service;
 
 import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
-import com.github.idonneedname.jmcomfessionwall_backend.request.*;
+import com.github.idonneedname.jmcomfessionwall_backend.request.RegAndLog.LoginRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.RegAndLog.RegisterRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.user.*;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 
 public interface UserService {

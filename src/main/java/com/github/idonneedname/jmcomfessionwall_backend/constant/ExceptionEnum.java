@@ -21,6 +21,8 @@ public enum ExceptionEnum {
     USER_NOT_FOUND(1009,"用户不存在"),
     NULL_USERNAME(1010,"用户名能为空"),
     OVERTIME_LOGIN(1011,"登录超时"),
+    BLACKLIST_USER(1012,"你已被拉黑"),
+    MEIDIQI(1013,"不能拉黑自己"),
     //post类错误
     POST_NOT_FOUND(1002, "资源不存在"),
     COMMENT_NOT_FOUND(1002, "资源不存在"),

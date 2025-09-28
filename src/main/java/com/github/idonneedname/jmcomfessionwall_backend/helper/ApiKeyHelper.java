@@ -15,6 +15,18 @@ public class ApiKeyHelper {
     @Resource
     public ApiKeyMapper apiKeyMapper;
     public static int keyRemainTime=1000*60*60*24;//一天超时
+    public int parseApiKey(String apiKey){
+        StringHelper.log(apiKey);
+        int ans=0;
+        if(apiKey.length()<=2)
+            return -1;
+        for(int i=1;i<apiKey.length();i++)
+        {
+            ans*=10;
+            ans+=((int)apiKey.charAt(i)-48);
+        }
+        return ans;
+    }//将就一下先
     public boolean isVaildApiKey(int id,String apiKey){
         if(apiKey.equals("ak1145141919810"))
             return true;
@@ -33,7 +45,7 @@ public class ApiKeyHelper {
         }
         else
             return false;
-    }//判断前端返回的apikey是否合法
+    }//判断前端返回的apikey是否合法（弃用）
     public static String genApiKey(int id)
     {
         int random=(int)(Math.random()*1000000000);

@@ -47,6 +47,8 @@ public class CommentServiceImpl implements CommentService {
         comment.likelist="[]";
         comment.subcomment="[]";
         comment.hidden=false;
+        comment.dadtype=req.type;
+        comment.dadid=req.target_id;
         commentMapper.insert(comment);
         if(req.type==1)
         {

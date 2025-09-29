@@ -40,9 +40,11 @@ public class Post {
     public String title;
     public String content;
     public int depth;
+    @JsonIgnore
     public boolean anonymity;
     @TableLogic
     public boolean hidden;
+    @JsonIgnore
     public boolean ispublic;
     //下面三个实质是个存放id的List，用ArrayNodeHelper里的方法操作
     @JsonIgnore
@@ -55,6 +57,10 @@ public class Post {
     public int comments;
 
 
+    @TableField(exist = false)
+    public String hostname;
+    @TableField(exist = false)
+    public Picture hostportrait;
     @TableField(exist = false)
     public ArrayList<Comment> subcomments;
     @TableField(exist = false)

@@ -27,7 +27,7 @@ import static com.github.idonneedname.jmcomfessionwall_backend.constant.Exceptio
 public class ApiKeyHelper {
     @Resource
     public ApiKeyMapper apiKeyMapper;
-    public static int keyRemainTime=1000*60*60*24;//一天超时
+    public static int keyRemainTime=1000*60*60*24;//弃用
     String secretString = "ushfgyA32u7yfh36FroHS256Algo87uijh"; // 32 字节
     byte[] keyBytes = secretString.getBytes(StandardCharsets.UTF_8);
     SecretKey key = new SecretKeySpec(keyBytes, "HmacSHA256");
@@ -69,6 +69,10 @@ public class ApiKeyHelper {
                 .setExpiration(new Date(System.currentTimeMillis() + 999999999))//超长过期时长
                 .signWith(key)
                 .compact();
+        ApiKey apikey=new  ApiKey();
+        apikey.apikey=jws;
+        apikey.id=id;
+        apiKeyMapper.insert(apikey);
         return jws;
     }//生成一个apikey
     public boolean isVaildApiKey(int id,String apiKey){

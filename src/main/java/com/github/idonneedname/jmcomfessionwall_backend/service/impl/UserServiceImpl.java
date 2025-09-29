@@ -58,21 +58,11 @@ public class UserServiceImpl implements UserService {
             throw new ApiException(WRONG_USERNAME_OR_PASSWORD);
         }
         else {
-            assembleHelper.assemble(user);
-            AjaxResult<User> response=AjaxResult.success(user);
             String api=apiKeyHelper.genKey(user.id);
-            ApiKey apiKey=apiKeyMapper.selectById(user.id);
-            if (apiKey==null) {
-                apiKey=new ApiKey();
-                apiKey.apikey = api;
-                apiKey.id = user.id;
-                apiKeyMapper.insert(apiKey);
-            }else {
-                apiKey.apikey = api;
-                apiKeyMapper.updateById(apiKey);
-            }
-            response.setMsg(api);
-            return response;
+            assembleHelper.assemble(user);
+            AjaxResult<User> ajaxResult=AjaxResult.success(user);
+            ajaxResult.setMsg(api);
+            return ajaxResult;
         }
     }
     public boolean isUserNameValid(String username){

@@ -40,6 +40,10 @@ public class Comment {
     public String content;
     public int depth;
     public boolean hidden;
+    @TableField(exist = false)
+    public String hostname;
+    @TableField(exist = false)
+    public Picture hostportrait;
 
     @JsonIgnore
     public int dadtype;

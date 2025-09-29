@@ -7,10 +7,10 @@ create table adminwhitelist
 
 create table apikey
 (
-    id              int         not null
+    id              int        not null
         primary key,
-    apikey          varchar(12) not null,
-    lastoperatetime mediumtext  not null
+    apikey          text       not null,
+    lastoperatetime mediumtext not null
 );
 
 create table comment
@@ -66,7 +66,8 @@ create table report
     status    int           not null,
     result    int           null,
     reason    varchar(1000) null,
-    targetid  int           not null
+    targetid  int           not null,
+    host      int           not null
 );
 
 create table user

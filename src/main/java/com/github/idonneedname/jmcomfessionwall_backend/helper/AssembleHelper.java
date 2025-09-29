@@ -2,10 +2,7 @@ package com.github.idonneedname.jmcomfessionwall_backend.helper;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.idonneedname.jmcomfessionwall_backend.constant.Constant;
-import com.github.idonneedname.jmcomfessionwall_backend.entity.Comment;
-import com.github.idonneedname.jmcomfessionwall_backend.entity.Picture;
-import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
-import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
+import com.github.idonneedname.jmcomfessionwall_backend.entity.*;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.CommentMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PictureMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;
@@ -55,6 +52,21 @@ public class AssembleHelper {
     //配置帖子具体内容
     public void assemble(Post post, int visitor, boolean shouldInitialComments)//填-1表示没有
     {
+        //用户信息
+        QueryWrapper<User> wrapper2 = new QueryWrapper<>();
+        wrapper2.eq("id",post.host);
+        User user = userMapper.selectOne(wrapper2);
+        post.hostportrait=new Picture();
+        if(!post.anonymity&&user!=null)
+        {
+            assemble(post.hostportrait,user.pictureref);
+            post.hostname=user.name;
+        }
+        else
+        {
+            assemble(post.hostportrait,-1);
+            post.hostname="UnknownName";
+        }
         //点赞
         ArrayList<Integer> like= ArrayNodeHelper.translateToArray(post.likelist);
         if(like!=null)
@@ -110,17 +122,32 @@ public class AssembleHelper {
             }
     }
     //配置评论信息具体内容
-    public void assemble(Comment comment,int target)
+    public void assemble(Comment comment,int visitor)
     {
+        //用户信息
+        QueryWrapper<User> wrapper2 = new QueryWrapper<>();
+        wrapper2.eq("id",comment.host);
+        User user = userMapper.selectOne(wrapper2);
+        comment.hostportrait=new Picture();
+        if(user!=null)
+        {
+            assemble(comment.hostportrait,user.pictureref);
+            comment.hostname=user.name;
+        }
+        else
+        {
+            assemble(comment.hostportrait,-1);
+            comment.hostname="UnknownName";
+        }
         //点赞
         ArrayList<Integer> like= ArrayNodeHelper.translateToArray(comment.likelist);
         if(like!=null)
         {
             comment.likes=like.size();
             comment.liked=false;
-            if(target!=-1)
+            if(visitor!=-1)
             {
-                if(ArrayNodeHelper.idInArray(comment.likelist,target)!=-1)
+                if(ArrayNodeHelper.idInArray(comment.likelist,visitor)!=-1)
                     comment.liked=true;
             }
         }
@@ -139,11 +166,16 @@ public class AssembleHelper {
                     QueryWrapper<Comment> wrapper=new QueryWrapper<>();
                     wrapper.eq("id",sub);
                     Comment subcomment=commentMapper.selectById(sub);
-                    assemble(subcomment,target);
+                    assemble(subcomment,visitor);
                     comment.subcomments.add(subcomment);
                 }
             }
 
         }
+    }
+    //配置举报(放这先，暂时没用)
+    public void assemble(Report report)
+    {
+
     }
 }

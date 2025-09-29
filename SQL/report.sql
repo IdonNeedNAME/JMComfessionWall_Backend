@@ -7,7 +7,8 @@ create table report
     status    int           not null,
     result    int           null,
     reason    varchar(1000) null,
-    targetid  int           not null
+    targetid  int           not null,
+    host      int           not null
 );
 
 

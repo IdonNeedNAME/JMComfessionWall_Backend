@@ -2,7 +2,9 @@ package com.github.idonneedname.jmcomfessionwall_backend.controler;
 
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Comment;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.ApiKeyHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;
+import com.github.idonneedname.jmcomfessionwall_backend.request.GetUnCheckedReportsRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.comment.GetCommentsOfPostRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.comment.UploadCommentRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.post.GetPostInfoRequest;
@@ -29,26 +31,31 @@ public class PostController {
     private CommentServiceImpl commentService;
     @Autowired
     private PostMapper postMapper;
+    @Autowired
+    private ApiKeyHelper apiKeyHelper;
 
     @PostMapping(
-            value = "/upload",
+            value = "",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     public AjaxResult<String> uploadPost(UploadPostRequest req, @RequestHeader("X-API-KEY") String api) {
+        req.user_id=apiKeyHelper.getUserId(api);
         return postService.uploadPost(req,api);
     }
-    @PostMapping("/comment")
-    public AjaxResult<String> uploadComment(@RequestBody UploadCommentRequest req, @RequestHeader("X-API-KEY") String api)
-    {
-        return commentService.uploadComment(req,api);
-    }
-    @GetMapping
-    public AjaxResult<Post> getPostInfo(@RequestBody GetPostInfoRequest req, @RequestHeader("X-API-KEY") String api) {
+
+    @GetMapping("/{postId}")
+    public AjaxResult<Post> getPostInfo(@PathVariable int postId, @RequestHeader("X-API-KEY") String api) {
+        GetPostInfoRequest req=new GetPostInfoRequest();
+        req.post_id = postId;
+        req.user_id = apiKeyHelper.getUserId(api);
         return postService.getPostInfo(req,api);
     }
-    @GetMapping("/comment")
-    public AjaxResult<ArrayList<Comment>> getCommentsOfPost(@RequestBody GetCommentsOfPostRequest req, @RequestHeader("X-API-KEY") String api)
+    @GetMapping("/{postId}/comments")
+    public AjaxResult<ArrayList<Comment>> getCommentsOfPost(@PathVariable int postId, @RequestHeader("X-API-KEY") String api)
     {
+        GetCommentsOfPostRequest req=new GetCommentsOfPostRequest();
+        req.post_id=postId;
+        req.user_id=apiKeyHelper.getUserId(api);
         return commentService.getCommentsOfPost(req,api);
     }
     @PatchMapping("/{postId}")

@@ -38,9 +38,6 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public AjaxResult<String> uploadComment(UploadCommentRequest req,String apiKey)
     {
-        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
-            throw new ApiException(INVALID_APIKEY);
-
         Comment comment = new Comment();
         comment.setContent(req.content);
         comment.host=req.user_id;
@@ -84,8 +81,6 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public AjaxResult<ArrayList<Comment>> getCommentsOfPost(GetCommentsOfPostRequest req, String apiKey)
     {
-        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
-            throw new ApiException(INVALID_APIKEY);
         QueryWrapper<Post> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",req.post_id);
         Post post = postMapper.selectOne(queryWrapper);
@@ -97,8 +92,6 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public AjaxResult<Comment> getCommentInfo(GetCommentInfoRequest req, String apiKey)
     {
-        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
-            throw new ApiException(INVALID_APIKEY);
         QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",req.comment_id);
         Comment comment = commentMapper.selectOne(queryWrapper);

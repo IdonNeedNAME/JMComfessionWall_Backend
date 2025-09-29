@@ -117,8 +117,6 @@ public class PostServiceImpl implements PostService {
     @Override
     public AjaxResult<String> uploadPost(UploadPostRequest req, String apiKey)
     {
-        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
-            throw new ApiException(INVALID_APIKEY);
         if(isContentValid(req.content)&&isTitleValid(req.title))
         {
             Post post=new Post();
@@ -140,8 +138,6 @@ public class PostServiceImpl implements PostService {
     @Override
     public AjaxResult<List<Post>> getPostOfUser(GetPostOfUserRequest req, String apiKey)
     {
-        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
-            throw new ApiException(INVALID_APIKEY);
         QueryWrapper<Post> queryWrapper=new QueryWrapper<>();
         queryWrapper.eq("host",req.target_id);
         List<Post> posts = postMapper.selectList(queryWrapper);
@@ -156,8 +152,6 @@ public class PostServiceImpl implements PostService {
     @Override
     public AjaxResult<Post> getPostInfo(GetPostInfoRequest req, String apiKey)
     {
-        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
-            throw new ApiException(INVALID_APIKEY);
         QueryWrapper<Post> queryWrapper=new QueryWrapper<>();
         queryWrapper.eq("id",req.post_id);
         Post post=postMapper.selectOne(queryWrapper);
@@ -181,7 +175,6 @@ public class PostServiceImpl implements PostService {
             post.anonymity=req.isAnonymity();
             post.ispublic=req.isPublic();
             postMapper.updateById(post);
-
         }
     }
     @Override

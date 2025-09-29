@@ -1,5 +1,6 @@
 package com.github.idonneedname.jmcomfessionwall_backend.controler;
 
+import com.github.idonneedname.jmcomfessionwall_backend.Response.UserInfoResponse;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Comment;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
@@ -67,7 +68,7 @@ public class UserController {
         return userService.addBlackList(req,api);
     }
     @GetMapping("/{id}")
-    public AjaxResult<User> getUserInfo(@PathVariable("id") int id, @RequestHeader("X-API-KEY") String api){
+    public AjaxResult<UserInfoResponse> getUserInfo(@PathVariable("id") int id, @RequestHeader("X-API-KEY") String api){
         return userService.getUserInformation(id,api);
     }
     @DeleteMapping("/deblacklist")

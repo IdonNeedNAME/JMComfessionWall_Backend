@@ -2,6 +2,7 @@ package com.github.idonneedname.jmcomfessionwall_backend.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.idonneedname.jmcomfessionwall_backend.Response.UserInfoResponse;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.AdminWhiteList;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.ApiKey;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
@@ -58,11 +59,21 @@ public class UserServiceImpl implements UserService {
             throw new ApiException(WRONG_USERNAME_OR_PASSWORD);
         }
         else {
-            String api=apiKeyHelper.genKey(user.id);
             assembleHelper.assemble(user);
-            AjaxResult<User> ajaxResult=AjaxResult.success(user);
-            ajaxResult.setMsg(api);
-            return ajaxResult;
+            AjaxResult<User> response=AjaxResult.success(user);
+            String api=apiKeyHelper.genKey(user.id);
+            ApiKey apiKey=apiKeyMapper.selectById(user.id);
+            if (apiKey==null) {
+                apiKey=new ApiKey();
+                apiKey.apikey = api;
+                apiKey.id = user.id;
+                apiKeyMapper.insert(apiKey);
+            }else {
+                apiKey.apikey = api;
+                apiKeyMapper.updateById(apiKey);
+            }
+            response.setMsg(api);
+            return response;
         }
     }
     public boolean isUserNameValid(String username){
@@ -168,7 +179,7 @@ public class UserServiceImpl implements UserService {
             throw new ApiException(INVALID_PASSWORD);
     }
     @Override
-    public AjaxResult<User> getUserInformation(int target_id, String apiKey)
+    public AjaxResult<UserInfoResponse> getUserInformation(int target_id, String apiKey)
     {
         log.info(apiKey);
         int user_id=apiKeyHelper.getUserId(apiKey);
@@ -179,7 +190,13 @@ public class UserServiceImpl implements UserService {
         else
         {
             assembleHelper.assemble(user);
-            return AjaxResult.success(user);
+            UserInfoResponse response=new UserInfoResponse();
+            response.setId(user_id);
+            response.setUsername(user.username);
+            response.setName(user.name);
+            response.setPortrait(user.portrait);
+            response.setType(user.type);
+            return AjaxResult.success(response);
         }
     }
     @Override

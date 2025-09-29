@@ -69,10 +69,6 @@ public class ApiKeyHelper {
                 .setExpiration(new Date(System.currentTimeMillis() + 999999999))//超长过期时长
                 .signWith(key)
                 .compact();
-        ApiKey apikey=new  ApiKey();
-        apikey.apikey=jws;
-        apikey.id=id;
-        apiKeyMapper.insert(apikey);
         return jws;
     }//生成一个apikey
     public boolean isVaildApiKey(int id,String apiKey){

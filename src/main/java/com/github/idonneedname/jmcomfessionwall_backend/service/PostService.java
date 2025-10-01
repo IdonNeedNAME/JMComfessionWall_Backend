@@ -10,10 +10,11 @@ import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import java.util.List;
 
 public interface PostService {
-    public AjaxResult<String> uploadPost(UploadPostRequest req, String apiKey);
-    public AjaxResult<List<Post>> getPostOfUser(int target_id, String apiKey);
-    public AjaxResult<Post> getPostInfo(GetPostInfoRequest req, String apiKey);
-    public void updatePost(UpdatePostRequest req, String apiKey);
+     AjaxResult<String> uploadPost(UploadPostRequest req, String apiKey);
+     AjaxResult<List<Post>> getPostOfUser(int target_id, String apiKey);
+     AjaxResult<Post> getPostInfo(GetPostInfoRequest req, String apiKey);
+     void updatePost(UpdatePostRequest req, String apiKey);
     void postLike(int post_id, String apiKey);
     void postDelete(int post_id, String apiKey);
+    AjaxResult<List<Post>> getRecommended(int userId);
 }

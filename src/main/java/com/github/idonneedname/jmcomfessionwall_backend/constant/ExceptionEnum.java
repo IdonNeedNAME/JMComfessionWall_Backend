@@ -41,7 +41,8 @@ public enum ExceptionEnum {
     RESOURCE_HAVE_BEEN_CHECKED(200, "该帖子已审核通过"),
     RESOURCE_NORMAL(200, null),
 
-
+    //服务器
+    SERVER_BUSY(3001,"服务器繁忙"),
 
     //举报
     REPORT_NOT_FOUND(3001,"举报不存在"),

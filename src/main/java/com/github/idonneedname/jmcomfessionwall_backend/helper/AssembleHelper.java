@@ -93,8 +93,6 @@ public class AssembleHelper {
             ArrayList<Integer> comments= ArrayNodeHelper.translateToArray(post.subcomment);
             if(comments!=null&&!comments.isEmpty())
             {
-
-                post.comments =0;
                 if(post.depth<3)
                 {
                     post.subcomments=new ArrayList<>();
@@ -113,7 +111,6 @@ public class AssembleHelper {
                             assemble(subcomment,visitor);
                             post.subcomments.add(subcomment);
                         }
-                        post.comments++;
                     }
                 }
 
@@ -141,7 +138,6 @@ public class AssembleHelper {
         ArrayList<Integer> like= ArrayNodeHelper.translateToArray(comment.likelist);
         if(like!=null)
         {
-            comment.likes=like.size();
             comment.liked=false;
             if(visitor!=-1)
             {
@@ -154,7 +150,6 @@ public class AssembleHelper {
         if(comments!=null)
         {
             comment.subcomments=new ArrayList<>();
-            comment.comments =comments.size();
             if(comment.depth<=2)
             {
                 int sub;

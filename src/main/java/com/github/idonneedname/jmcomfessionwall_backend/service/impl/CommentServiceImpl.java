@@ -1,6 +1,7 @@
 package com.github.idonneedname.jmcomfessionwall_backend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.idonneedname.jmcomfessionwall_backend.constant.Constant;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Comment;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
@@ -50,14 +51,13 @@ public class CommentServiceImpl implements CommentService {
         commentMapper.insert(comment);
         if(req.type==1)
         {
-            QueryWrapper<Post> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("id",req.target_id);
-            Post post = postMapper.selectOne(queryWrapper);
+            Post post= Constant.pushCache.getPost(req.target_id);
             if(post!=null)
             {
                 post.subcomment= ArrayNodeHelper.add(post.subcomment,comment.id);
+                post.comments++;
                 comment.depth=post.depth+1;
-                postMapper.update(post,queryWrapper);
+                Constant.postCache.tryUpdate(post);
             }
             else
                 throw new ApiException(POST_NOT_FOUND);
@@ -71,6 +71,10 @@ public class CommentServiceImpl implements CommentService {
             {
                 dad.subcomment= ArrayNodeHelper.add(dad.subcomment,comment.id);
                 comment.depth=dad.depth+1;
+                comment.comments++;
+                Post post= Constant.pushCache.getPost(dad.dadid);
+                post.comments++;
+                Constant.postCache.tryUpdate(post);
                 commentMapper.update(dad,queryWrapper);
             }
             else

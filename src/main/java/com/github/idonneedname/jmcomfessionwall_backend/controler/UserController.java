@@ -2,6 +2,7 @@ package com.github.idonneedname.jmcomfessionwall_backend.controler;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.idonneedname.jmcomfessionwall_backend.Response.UserInfoResponse;
+import com.github.idonneedname.jmcomfessionwall_backend.constant.Constant;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Comment;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.ApiKeyHelper;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController
@@ -81,12 +83,11 @@ public class UserController {
     public AjaxResult<List<Post>> getPostsOfUser(@PathVariable("userId") int userId, @RequestHeader("X-API-KEY") String api){
         return postService.getPostOfUser(userId,api);
     }
-    @PostMapping("/pic")//不用管跑测试用的
-    public AjaxResult<Comment> fuckyouJAVA(@RequestHeader("X-API-KEY") String api){
-        QueryWrapper<Comment> postQueryWrapper = new QueryWrapper<>();
-        postQueryWrapper.eq("id",1);
-        Comment comment=commentMapper.selectOne(postQueryWrapper);
-            assembleHelper.assemble(comment,-1);
-        return AjaxResult.success(comment);
+    @PostMapping("/pic/{id}")//不用管跑测试用的
+    public AjaxResult<String> fuckyouJAVA(@PathVariable int id,@RequestHeader("X-API-KEY") String api){
+         Post post= Constant.postCache.tryFindById(id);
+         post.likes+=999;
+         Constant.postCache.tryUpdate(post);
+        return AjaxResult.success("ssss");
     }
 }

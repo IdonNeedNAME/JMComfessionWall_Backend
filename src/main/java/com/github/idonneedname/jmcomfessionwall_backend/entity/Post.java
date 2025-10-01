@@ -1,6 +1,7 @@
 package com.github.idonneedname.jmcomfessionwall_backend.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,6 +38,8 @@ public class Post {
     @TableId(type= IdType.AUTO)
     public int id;
     public int host;
+    @JsonIgnore
+    public long date;
     public String title;
     public String content;
     public int depth;
@@ -67,6 +70,5 @@ public class Post {
     public ArrayList<Picture> pictures;
     @TableField(exist = false)
     public boolean liked;
-
 
 }

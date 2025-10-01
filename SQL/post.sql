@@ -13,7 +13,8 @@ create table post
     hidden     tinyint(1)    not null,
     ispublic   tinyint(1)    not null,
     comments   int           not null comment '评论数',
-    likes      int           not null comment '点赞数'
+    likes      int           not null comment '点赞数',
+    date       bigint        not null
 );
 
 

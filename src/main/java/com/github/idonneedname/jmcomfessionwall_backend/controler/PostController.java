@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/post")
@@ -71,5 +72,10 @@ public class PostController {
     public AjaxResult<Void> postDelete(@PathVariable("postId") int id,@RequestHeader("X-API-KEY") String api){
         postService.postDelete(id,api);
         return AjaxResult.success();
+    }
+    @GetMapping("/homepage")
+    public AjaxResult<List<Post>> getRecommendedPosts(@RequestHeader("X-API-KEY") String api)
+    {
+        return postService.getRecommended(apiKeyHelper.getUserId(api));
     }
 }

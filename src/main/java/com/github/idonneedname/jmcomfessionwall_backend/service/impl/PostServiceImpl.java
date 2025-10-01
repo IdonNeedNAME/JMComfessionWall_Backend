@@ -3,6 +3,7 @@ package com.github.idonneedname.jmcomfessionwall_backend.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.github.idonneedname.jmcomfessionwall_backend.constant.Constant;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
@@ -24,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Instant;
 import java.util.List;
 
 import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.*;
@@ -130,6 +132,7 @@ public class PostServiceImpl implements PostService {
             post.likelist="[]";
             post.subcomment="[]";
             post.picture=getPicture(req.pictures);
+            post.date= Instant.now().toEpochMilli();
             postMapper.insert(post);
             return AjaxResult.success(null);
         }
@@ -139,16 +142,22 @@ public class PostServiceImpl implements PostService {
     public AjaxResult<List<Post>> getPostOfUser(int target_id, String apiKey)
     {
         int user_id = apiKeyHelper.getUserId(apiKey);
-
         QueryWrapper<Post> queryWrapper=new QueryWrapper<>();
         queryWrapper.eq("host",target_id);
         List<Post> posts = postMapper.selectList(queryWrapper);
-
         User user=userMapper.selectById(target_id);
         if(posts.isEmpty()||(idInArray(user.blacklist,user_id)!=-1)) return AjaxResult.success(null);
         for(int i=0;i<posts.size();i++)
+        {
+            //泥马勒戈壁的JAVA连委托都没有
+            if(!posts.get(i).ispublic&&user_id!=posts.get(i).host)
+            {
+                posts.remove(i);
+                i--;
+                continue;
+            }
             assembleHelper.assemble(posts.get(i),user_id,false);
-
+        }
         return AjaxResult.success(posts);
     }
     @Override
@@ -159,7 +168,7 @@ public class PostServiceImpl implements PostService {
         Post post=postMapper.selectOne(queryWrapper);
         if(post==null)
             throw new ApiException(POST_NOT_FOUND);
-        if(post.hidden)
+        if((!post.ispublic&&req.user_id!=post.host))
             throw new ApiException(POST_NOT_FOUND);
         assembleHelper.assemble(post,req.user_id,true);
         return AjaxResult.success(post);
@@ -168,7 +177,7 @@ public class PostServiceImpl implements PostService {
     public void updatePost(UpdatePostRequest req, String apiKey) {
         req.setUser_id(apiKeyHelper.parseApiKey(apiKey));
         if(isTitleValid(req.getNewTitle())&&isContentValid(req.getNewContent())) {
-            Post post = postMapper.selectById(req.getPost_id());
+            Post post = Constant.postCache.tryFindById(req.getPost_id());
             throwAmendQuestion(post, req.getUser_id());//检查修改时可能存在的一些问题
             //修改
             post.title=req.getNewTitle();
@@ -176,13 +185,13 @@ public class PostServiceImpl implements PostService {
             post.picture=getPicture(req.pictures);
             post.anonymity=req.isAnonymity();
             post.ispublic=req.isPublic();
-            postMapper.updateById(post);
+            Constant.postCache.tryUpdate(post);
         }
     }
     @Override
     public void postLike(int post_id, String apiKey) {
         int user_id=apiKeyHelper.parseApiKey(apiKey);
-        Post post = postMapper.selectById(post_id);
+        Post post = Constant.postCache.tryFindById(post_id);
         User user = userMapper.selectById(user_id);
         if (user==null)
             throw new ApiException(USER_NOT_FOUND);
@@ -191,18 +200,36 @@ public class PostServiceImpl implements PostService {
         StringHelper.log(post.host);
         if(user_id==post.host)
             throw new ApiException(HOST_ADD_LIKE);
+        log.info("user");
         if(idInArray(post.likelist,user_id)!=-1)
-            post.likelist=delete(post.likelist,post_id);
+        {
+            post.likelist=delete(post.likelist,user_id);
+            post.likes--;
+        }
         else
-            post.likelist=add(post.likelist,post_id);
-        postMapper.updateById(post);
+        {
+            post.likelist=add(post.likelist,user_id);
+            post.likes++;
+        }
+        Constant.postCache.tryUpdate(post);
     }
 
     @Override
     public void postDelete(int post_id, String apiKey) {
         int user_id=apiKeyHelper.parseApiKey(apiKey);
-        Post post = postMapper.selectById(post_id);
+        Post post = Constant.postCache.tryFindById(post_id);
         throwAmendQuestion(post,user_id);
-        postMapper.deleteById(post_id);
+        Constant.postCache.tryDelete(post);
+    }
+
+    @Override
+    public AjaxResult<List<Post>> getRecommended(int userId)
+    {
+        List<Post> posts=(Constant.pushCache.getRecommended(userId));
+        for(int i=0;i<posts.size();i++)
+        {
+            assembleHelper.assemble(posts.get(i),userId,false);
+        }
+        return AjaxResult.success(posts);
     }
 }

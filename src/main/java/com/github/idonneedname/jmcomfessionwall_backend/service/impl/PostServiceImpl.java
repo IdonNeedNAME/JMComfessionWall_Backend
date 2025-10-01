@@ -16,7 +16,6 @@ import com.github.idonneedname.jmcomfessionwall_backend.mapper.UserMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.request.post.GetPostInfoRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.post.UpdatePostRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.post.UploadPostRequest;
-import com.github.idonneedname.jmcomfessionwall_backend.request.user.GetPostOfUserRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import com.github.idonneedname.jmcomfessionwall_backend.service.PostService;
 import jakarta.annotation.Resource;
@@ -62,7 +61,7 @@ public class PostServiceImpl implements PostService {
             throw new ApiException(PERMISSION_NOT_ALLOWED);
         }
     }
-    public void isInBlackList(Post post,int user_id){
+    public void inBlackList(Post post, int user_id){
         if (post == null) {
             throw new ApiException(POST_NOT_FOUND);
         }
@@ -136,17 +135,19 @@ public class PostServiceImpl implements PostService {
         return  AjaxResult.fail(null);
     }
     @Override
-    public AjaxResult<List<Post>> getPostOfUser(GetPostOfUserRequest req, String apiKey)
+    public AjaxResult<List<Post>> getPostOfUser(int target_id, String apiKey)
     {
+        int user_id = apiKeyHelper.getUserId(apiKey);
+
         QueryWrapper<Post> queryWrapper=new QueryWrapper<>();
-        queryWrapper.eq("host",req.target_id);
+        queryWrapper.eq("host",target_id);
         List<Post> posts = postMapper.selectList(queryWrapper);
-        if(posts.isEmpty()) return AjaxResult.success(null);
+
+        User user=userMapper.selectById(target_id);
+        if(posts.isEmpty()||(idInArray(user.blacklist,user_id)!=-1)) return AjaxResult.success(null);
         for(int i=0;i<posts.size();i++)
-        {
-            if(!posts.get(i).hidden)
-               assembleHelper.assemble(posts.get(i),req.user_id,false);
-        }
+            assembleHelper.assemble(posts.get(i),user_id,false);
+
         return AjaxResult.success(posts);
     }
     @Override
@@ -184,7 +185,7 @@ public class PostServiceImpl implements PostService {
         User user = userMapper.selectById(user_id);
         if (user==null)
             throw new ApiException(USER_NOT_FOUND);
-        isInBlackList(post,user_id);
+        inBlackList(post,user_id);
         StringHelper.log(user_id);
         StringHelper.log(post.host);
         if(user_id==post.host)

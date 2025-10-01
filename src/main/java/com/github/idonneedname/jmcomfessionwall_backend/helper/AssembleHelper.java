@@ -53,9 +53,7 @@ public class AssembleHelper {
     public void assemble(Post post, int visitor, boolean shouldInitialComments)//填-1表示没有
     {
         //用户信息
-        QueryWrapper<User> wrapper2 = new QueryWrapper<>();
-        wrapper2.eq("id",post.host);
-        User user = userMapper.selectOne(wrapper2);
+        User user = userMapper.selectById(post.host);
         post.hostportrait=new Picture();
         if(!post.anonymity&&user!=null)
         {

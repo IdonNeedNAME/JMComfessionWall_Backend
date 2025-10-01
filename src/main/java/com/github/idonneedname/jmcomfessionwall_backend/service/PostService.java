@@ -5,7 +5,6 @@ import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
 import com.github.idonneedname.jmcomfessionwall_backend.request.post.GetPostInfoRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.post.UpdatePostRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.post.UploadPostRequest;
-import com.github.idonneedname.jmcomfessionwall_backend.request.GetPostOfUserRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 
 import java.util.List;

@@ -2,15 +2,13 @@ package com.github.idonneedname.jmcomfessionwall_backend.controler;
 
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Report;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.ApiKeyHelper;
+import com.github.idonneedname.jmcomfessionwall_backend.request.GetUnCheckedReportsRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.Report.GetAllReportsRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.Report.GetReportInfoRequest;
-import com.github.idonneedname.jmcomfessionwall_backend.request.GetUnCheckedReportsRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import com.github.idonneedname.jmcomfessionwall_backend.service.impl.ReportServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.PathMatcher;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -5,18 +5,18 @@ import com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.ApiKey;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.ApiKeyMapper;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
-import io.jsonwebtoken.security.Keys;
-import javax.crypto.SecretKey;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Base64;
 import java.util.Date;
 import java.util.Objects;
 

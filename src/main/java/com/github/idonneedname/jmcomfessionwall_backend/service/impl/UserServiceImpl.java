@@ -14,7 +14,10 @@ import com.github.idonneedname.jmcomfessionwall_backend.mapper.PictureMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.UserMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.request.RegAndLog.LoginRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.RegAndLog.RegisterRequest;
-import com.github.idonneedname.jmcomfessionwall_backend.request.user.*;
+import com.github.idonneedname.jmcomfessionwall_backend.request.user.AmendNameRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.user.AmendPasswordRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.user.BlackListRequest;
+import com.github.idonneedname.jmcomfessionwall_backend.request.user.UploadPortraitRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import com.github.idonneedname.jmcomfessionwall_backend.service.UserService;
 import jakarta.annotation.Resource;
@@ -23,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.*;
 

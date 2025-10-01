@@ -5,12 +5,11 @@ import com.github.idonneedname.jmcomfessionwall_backend.entity.Report;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.ApiKeyHelper;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.StringHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.ReportMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.UserMapper;
+import com.github.idonneedname.jmcomfessionwall_backend.request.GetUnCheckedReportsRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.Report.GetAllReportsRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.Report.GetReportInfoRequest;
-import com.github.idonneedname.jmcomfessionwall_backend.request.GetUnCheckedReportsRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import com.github.idonneedname.jmcomfessionwall_backend.service.ReportService;
 import jakarta.annotation.Resource;
@@ -21,7 +20,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.*;
+import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.PERMISSION_NOT_ALLOWED;
+import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.REPORT_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor

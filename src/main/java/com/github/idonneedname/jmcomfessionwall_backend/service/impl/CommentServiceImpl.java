@@ -21,7 +21,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
-import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.*;
+import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.COMMENT_NOT_FOUND;
+import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.POST_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor

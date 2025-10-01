@@ -8,7 +8,6 @@ import com.github.idonneedname.jmcomfessionwall_backend.helper.ApiKeyHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.AssembleHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.CommentMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;
-import com.github.idonneedname.jmcomfessionwall_backend.request.GetPostOfUserRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.RegAndLog.LoginRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.RegAndLog.RegisterRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.user.*;

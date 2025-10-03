@@ -6,6 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AmendNameRequest {
-    public int user_id;
-    public String newname;
+    private String newname;
 }

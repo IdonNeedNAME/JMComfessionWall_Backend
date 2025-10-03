@@ -26,8 +26,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.*;
+import static com.github.idonneedname.jmcomfessionwall_backend.helper.ArrayNodeHelper.idInArray;
+import static com.github.idonneedname.jmcomfessionwall_backend.helper.ArrayNodeHelper.translateToArray;
 
 @Service
 @RequiredArgsConstructor
@@ -129,7 +132,7 @@ public class UserServiceImpl implements UserService {
                         user.blacklist="[]";//初始化一下
                         user.pictureref=-1;//无头像，默认为-1
                         userMapper.insert(user);
-                        return AjaxResult.success(null);
+                        return AjaxResult.success();
                    }
                    else
                        throw new ApiException(NOT_BELONG_TO_ADMIN);
@@ -142,43 +145,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public AjaxResult<String> amendName(AmendNameRequest req, String apiKey)
     {
-        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
-            throw new ApiException(INVALID_APIKEY);
-        if(isUserNameValid(req.newname))
+        int user_id= apiKeyHelper.getUserId(apiKey);
+        if(isUserNameValid(req.getNewname()))
         {
-            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("id",req.user_id);
-            User user = userMapper.selectOne(queryWrapper);
-            if(user==null)
-                throw new ApiException(USER_NOT_FOUND);
-            user.name=req.newname;
-            userMapper.update(user,queryWrapper);
-            return AjaxResult.success(null);
+            User user = userMapper.selectById(user_id);
+            user.name=req.getNewname();
+            userMapper.updateById(user);
+            return AjaxResult.success();
         }
         return AjaxResult.fail(USERNAME_TOO_LONG);
     }
     @Override
     public AjaxResult<String> amendPassword(AmendPasswordRequest req, String apiKey)
     {
-        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
-            throw new ApiException(INVALID_APIKEY);
-        if(isPassWordValid(req.newpassword))
-        {
-            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("id",req.user_id);
-            User user = userMapper.selectOne(queryWrapper);
-
-            if(user==null)
-                throw new ApiException(USER_NOT_FOUND);
-            if(!user.password.equals(req.originpassword))
-                throw new ApiException(ORIGINAL_PASSWORD_ERROR);
-
-            user.password=req.newpassword;
-            userMapper.update(user,queryWrapper);
-            return AjaxResult.success(null);
-        }
-        else
+        int user_id= apiKeyHelper.getUserId(apiKey);
+        User user = userMapper.selectById(user_id);
+        if(!user.password.equals(req.getOriginpassword()))
+            throw new ApiException(ORIGINAL_PASSWORD_ERROR);
+        if(!isPassWordValid(req.getNewpassword()))
             throw new ApiException(INVALID_PASSWORD);
+        user.password=req.getNewpassword();
+        userMapper.updateById(user);
+        ApiKey api=apiKeyMapper.selectById(user_id);
+        api.setApikey(apiKeyHelper.genKey(user.id));
+        apiKeyMapper.updateById(api);
+        return AjaxResult.success();
     }
     @Override
     public AjaxResult<UserInfoResponse> getUserInformation(int target_id, String apiKey)
@@ -204,59 +195,49 @@ public class UserServiceImpl implements UserService {
     @Override
     public AjaxResult<String> uploadPortrait(UploadPortraitRequest req, String apiKey)
     {
-        StringHelper.log(req.user_id);
-        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
-            throw new ApiException(INVALID_APIKEY);
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",req.user_id);
-        User user = userMapper.selectOne(queryWrapper);
-        if(user==null)
-            throw new ApiException(USER_NOT_FOUND);
-        try
-        {
-            fileStorageService.storeFile(req.picture);
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
-        user.pictureref=pictureHelper.storeOne(req.picture);
-        userMapper.update(user,queryWrapper);
-        return AjaxResult.success(null);
+        int user_id= apiKeyHelper.getUserId(apiKey);
+        User user = userMapper.selectById(user_id);
+        user.pictureref=pictureHelper.storePicture(req.getPicture());
+        userMapper.updateById(user);
+        return AjaxResult.success();
     }
     @Override
     public AjaxResult<String> addBlackList(BlackListRequest req, String apiKey)
     {
-        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
-            throw new ApiException(INVALID_APIKEY);
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",req.user_id);
-        User user = userMapper.selectOne(queryWrapper);
-        if(user==null)
+        int user_id= apiKeyHelper.getUserId(apiKey);
+        if(req.getTarget_id()==user_id)
+            throw new ApiException(MEIDIQI);
+        User blacklistedUser=userMapper.selectById(req.getTarget_id());
+        if(blacklistedUser==null)
             throw new ApiException(USER_NOT_FOUND);
-
+        User user = userMapper.selectById(user_id);
         if(user.blacklist==null)
             user.blacklist="[]";
-        user.blacklist=ArrayNodeHelper.add(user.blacklist,req.target_id);
-        userMapper.update(user,queryWrapper);
-        return AjaxResult.success(null);
+        user.blacklist=ArrayNodeHelper.add(user.blacklist,req.getTarget_id());
+        userMapper.updateById(user);
+        return AjaxResult.success();
     }
     public AjaxResult<String> deleteBlackList(BlackListRequest req, String apiKey)
     {
-        if(!apiKeyHelper.isVaildApiKey(req.user_id,apiKey))
-            throw new ApiException(INVALID_APIKEY);
-        if(req.target_id==req.user_id)
-           throw new ApiException(MEIDIQI);
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",req.user_id);
-        User user = userMapper.selectOne(queryWrapper);
-        if(user==null)
+        int user_id= apiKeyHelper.getUserId(apiKey);
+        User blacklistedUser=userMapper.selectById(req.getTarget_id());
+        if(blacklistedUser==null)
             throw new ApiException(USER_NOT_FOUND);
+        User user = userMapper.selectById(user_id);
         if(user.blacklist==null)
             user.blacklist="[]";
-        user.blacklist=ArrayNodeHelper.delete(user.blacklist,req.target_id);
-        userMapper.update(user,queryWrapper);
-        return AjaxResult.success(null);
+        if (idInArray(user.blacklist,req.getTarget_id())==-1)
+            throw new ApiException(IS_NOT_IN_BLACKLIST);
+        user.blacklist=ArrayNodeHelper.delete(user.blacklist,req.getTarget_id());
+        userMapper.updateById(user);
+        return AjaxResult.success();
+    }
+
+    @Override
+    public AjaxResult<List<Integer>> getBlackList(String apiKey) {
+        int user_id= apiKeyHelper.getUserId(apiKey);
+        User user = userMapper.selectById(user_id);
+        return AjaxResult.success(translateToArray(user.blacklist));
     }
 
 

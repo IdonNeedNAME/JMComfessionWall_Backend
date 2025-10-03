@@ -20,8 +20,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.Objects;
 
-import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.INVALID_APIKEY;
-import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.USER_NOT_FOUND;
+import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.*;
 
 @Service
 public class ApiKeyHelper {
@@ -38,8 +37,8 @@ public class ApiKeyHelper {
         if(apiKey==null)
             throw new ApiException(USER_NOT_FOUND);
         if (!Objects.equals(apiKey.getApikey(), api))
-            throw new ApiException(INVALID_APIKEY);
-        return parseApiKey(api);
+            throw new ApiException(LOGIN_EXPIRED);
+        return user_id;
     }
     public int parseApiKey(String apiKey){
         int ans;

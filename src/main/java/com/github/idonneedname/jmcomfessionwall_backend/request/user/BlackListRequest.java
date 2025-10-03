@@ -6,6 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BlackListRequest {
-    public int user_id;
-    public int target_id;
+    private int target_id;
 }

@@ -83,6 +83,10 @@ public class UserController {
     public AjaxResult<List<Post>> getPostsOfUser(@PathVariable("userId") int userId, @RequestHeader("X-API-KEY") String api){
         return postService.getPostOfUser(userId,api);
     }
+    @GetMapping("/black")
+    public AjaxResult<List<Integer>> getBlackList(@RequestHeader("X-API-KEY") String api){
+        return userService.getBlackList(api);
+    }
     @PostMapping("/pic/{id}")//不用管跑测试用的
     public AjaxResult<String> fuckyouJAVA(@PathVariable int id,@RequestHeader("X-API-KEY") String api){
          Post post= Constant.postCache.tryFindById(id);

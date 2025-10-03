@@ -7,6 +7,5 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 public class UploadPortraitRequest {
-    public int user_id;
-    public MultipartFile picture;
+    private MultipartFile picture;
 }

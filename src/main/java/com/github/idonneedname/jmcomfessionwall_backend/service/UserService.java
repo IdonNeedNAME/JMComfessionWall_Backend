@@ -10,13 +10,16 @@ import com.github.idonneedname.jmcomfessionwall_backend.request.user.BlackListRe
 import com.github.idonneedname.jmcomfessionwall_backend.request.user.UploadPortraitRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 
+import java.util.List;
+
 public interface UserService {
-    public AjaxResult<User> login(LoginRequest req);
-    public AjaxResult<String> register(RegisterRequest req);
-    public AjaxResult<String> amendName(AmendNameRequest req, String apiKey);
-    public AjaxResult<String> amendPassword(AmendPasswordRequest req, String apiKey);
-    public AjaxResult<UserInfoResponse> getUserInformation(int target_id, String apiKey);
-    public AjaxResult<String> uploadPortrait(UploadPortraitRequest req, String apiKey);
-    public AjaxResult<String> addBlackList(BlackListRequest req, String apiKey);
-    public AjaxResult<String> deleteBlackList(BlackListRequest req, String apiKey);
+    AjaxResult<User> login(LoginRequest req);
+    AjaxResult<String> register(RegisterRequest req);
+    AjaxResult<String> amendName(AmendNameRequest req, String apiKey);
+    AjaxResult<String> amendPassword(AmendPasswordRequest req, String apiKey);
+    AjaxResult<UserInfoResponse> getUserInformation(int target_id, String apiKey);
+    AjaxResult<String> uploadPortrait(UploadPortraitRequest req, String apiKey);
+    AjaxResult<String> addBlackList(BlackListRequest req, String apiKey);
+    AjaxResult<String> deleteBlackList(BlackListRequest req, String apiKey);
+    AjaxResult<List<Integer>> getBlackList(String apiKey);
 }

@@ -12,4 +12,5 @@ public interface CommentService {
     public AjaxResult<String> uploadComment(UploadCommentRequest req,String apiKey);
     public AjaxResult<ArrayList<Comment>> getCommentsOfPost(GetCommentsOfPostRequest req, String apiKey);
     public AjaxResult<Comment> getCommentInfo(GetCommentInfoRequest req, String apiKey);
+    public AjaxResult<String> commentLike(int userId, int commentId);
 }

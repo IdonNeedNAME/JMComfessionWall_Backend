@@ -45,4 +45,10 @@ public class CommentController {
         req.target_id=postId;
         return commentService.uploadComment(req,api);
     }
+    @PostMapping("/{commentId}/like")
+    public AjaxResult<String> commentLike(@PathVariable int commentId,@RequestHeader("X-API-KEY") String api)
+    {
+        int userId = apiKeyHelper.getUserId(api);
+        return commentService.commentLike(userId,commentId);
+    }
 }

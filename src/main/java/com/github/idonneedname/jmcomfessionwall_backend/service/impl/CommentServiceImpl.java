@@ -4,12 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.idonneedname.jmcomfessionwall_backend.constant.Constant;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Comment;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
+import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.ApiKeyHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.ArrayNodeHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.AssembleHelper;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.event.CommentLikeEvent;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.event.PostLikeEvent;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.CommentMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;
+import com.github.idonneedname.jmcomfessionwall_backend.mapper.UserMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.request.comment.GetCommentInfoRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.comment.GetCommentsOfPostRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.comment.UploadCommentRequest;
@@ -22,8 +26,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
-import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.COMMENT_NOT_FOUND;
-import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.POST_NOT_FOUND;
+import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.*;
+import static com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum.HOST_ADD_LIKE;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +41,8 @@ public class CommentServiceImpl implements CommentService {
     private AssembleHelper assembleHelper;
     @Resource
     private ApiKeyHelper apiKeyHelper;
+    @Resource
+    private UserMapper userMapper;
     @Override
     public AjaxResult<String> uploadComment(UploadCommentRequest req,String apiKey)
     {
@@ -104,6 +110,21 @@ public class CommentServiceImpl implements CommentService {
             throw new ApiException(COMMENT_NOT_FOUND);
         assembleHelper.assemble(comment,req.user_id);
         return AjaxResult.success(comment);
+    }
+    @Override
+    public AjaxResult<String> commentLike(int userId,int commentId)
+    {
+        QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",commentId);
+        Comment comment = commentMapper.selectOne(queryWrapper);
+        User user = userMapper.selectById(userId);
+        if (user==null)
+            throw new ApiException(USER_NOT_FOUND);
+        if(userId==comment.host)
+            throw new ApiException(HOST_ADD_LIKE);
+        CommentLikeEvent event=new CommentLikeEvent(Constant.eventHandler,userId,comment,commentMapper);
+        Constant.eventHandler.addEvent(event);
+        return AjaxResult.success();
     }
 
 }

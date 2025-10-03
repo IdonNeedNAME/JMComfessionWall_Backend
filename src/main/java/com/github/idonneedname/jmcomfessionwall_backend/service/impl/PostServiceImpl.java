@@ -11,7 +11,7 @@ import com.github.idonneedname.jmcomfessionwall_backend.helper.ApiKeyHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.AssembleHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.PictureHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.StringHelper;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.event.LikeEvent;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.event.PostLikeEvent;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PictureMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.UserMapper;
@@ -202,17 +202,8 @@ public class PostServiceImpl implements PostService {
         if(user_id==post.host)
             throw new ApiException(HOST_ADD_LIKE);
         log.info("user");
-        if(idInArray(post.likelist,user_id)!=-1)
-        {
-            LikeEvent event=new LikeEvent(Constant.eventHandler,false,user_id,post_id);
-            Constant.eventHandler.addEvent(event);
-        }
-        else
-        {
-            LikeEvent event=new LikeEvent(Constant.eventHandler,true,user_id,post_id);
-            Constant.eventHandler.addEvent(event);
-        }
-        //Constant.postCache.tryUpdate(post);
+        PostLikeEvent event=new PostLikeEvent(Constant.eventHandler,user_id,post_id);
+        Constant.eventHandler.addEvent(event);
         //事件处理器已经自动update了
     }
 

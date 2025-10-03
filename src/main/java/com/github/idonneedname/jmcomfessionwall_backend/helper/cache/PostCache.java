@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+//对post的操作尽量用这个，这样我好处理缓存
 @Service
 public class PostCache //帖子缓存，包含了删改读写，但直接读列表的还没做，mdJAVA没委托做你妈
 {
@@ -22,7 +23,7 @@ public class PostCache //帖子缓存，包含了删改读写，但直接读列�
         posts=new CacheHelper<>();
         detectAll();
     }
-    //从数据库中读取所有
+    //从数据库中读取所有post
     public void detectAll()
     {
         posts.map=new HashMap<>();
@@ -48,24 +49,24 @@ public class PostCache //帖子缓存，包含了删改读写，但直接读列�
         }
         return post;
     }
+    //更新
     @Transactional
     public void tryUpdate(Post post) {
         postMapper.updateById(post);
         // 事务提交后执行缓存清除
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.registerSynchronization(
-                    new TransactionSynchronization() {
-                        @Override
-                        public void afterCommit() {
-                            posts.map.remove(post.id);
-                        }
-                    }
-            );
-        } else {
-            // 无事务时直接清除
-            posts.map.remove(post.id);
-        }
+//        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+//            TransactionSynchronizationManager.registerSynchronization(
+//                    new TransactionSynchronization() {
+//                        @Override
+//                        public void afterCommit() {
+//                            posts.map.put(post.id, post);
+//                        }
+//                    }
+//            );
+//        }
+        //待改进
     }
+    //插入
     @Transactional
     public void tryInsert(Post post) {
         postMapper.insert(post);
@@ -74,16 +75,14 @@ public class PostCache //帖子缓存，包含了删改读写，但直接读列�
                     new TransactionSynchronization() {
                         @Override
                         public void afterCommit() {
-                            posts.map.remove(post.id);
+                            posts.map.put(post.id, post);
                             allId.add(post.id);
                         }
                     }
             );
-        } else {
-            posts.map.remove(post.id);
-            allId.add(post.id);
         }
     }
+    //删除
     @Transactional
     public void tryDelete(Post post) {
         postMapper.deleteById(post);
@@ -97,11 +96,6 @@ public class PostCache //帖子缓存，包含了删改读写，但直接读列�
                         }
                     }
             );
-        } else {
-            // 无事务时直接清除
-            posts.map.remove(post.id);
-            allId.remove(post.id);
         }
     }
-
 }

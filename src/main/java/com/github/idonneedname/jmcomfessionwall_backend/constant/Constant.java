@@ -4,6 +4,7 @@ import com.github.idonneedname.jmcomfessionwall_backend.entity.Picture;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.cache.PostCache;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.cache.PushCache;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.cache.SessionCache;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.event.EventHandler;
 
 public class Constant {
     //改成你自己的
@@ -13,5 +14,6 @@ public class Constant {
     public static PostCache postCache ;
     public static SessionCache sessionCache ;
     public static PushCache  pushCache ;
+    public static EventHandler  eventHandler;
 
 }

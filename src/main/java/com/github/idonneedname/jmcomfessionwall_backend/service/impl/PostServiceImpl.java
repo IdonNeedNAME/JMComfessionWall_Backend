@@ -11,6 +11,7 @@ import com.github.idonneedname.jmcomfessionwall_backend.helper.ApiKeyHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.AssembleHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.PictureHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.StringHelper;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.event.LikeEvent;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PictureMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.UserMapper;
@@ -203,15 +204,16 @@ public class PostServiceImpl implements PostService {
         log.info("user");
         if(idInArray(post.likelist,user_id)!=-1)
         {
-            post.likelist=delete(post.likelist,user_id);
-            post.likes--;
+            LikeEvent event=new LikeEvent(Constant.eventHandler,false,user_id,post_id);
+            Constant.eventHandler.addEvent(event);
         }
         else
         {
-            post.likelist=add(post.likelist,user_id);
-            post.likes++;
+            LikeEvent event=new LikeEvent(Constant.eventHandler,true,user_id,post_id);
+            Constant.eventHandler.addEvent(event);
         }
-        Constant.postCache.tryUpdate(post);
+        //Constant.postCache.tryUpdate(post);
+        //事件处理器已经自动update了
     }
 
     @Override

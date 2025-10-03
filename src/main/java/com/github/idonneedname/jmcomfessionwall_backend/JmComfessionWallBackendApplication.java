@@ -5,6 +5,7 @@ import com.github.idonneedname.jmcomfessionwall_backend.helper.StringHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.cache.PostCache;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.cache.PushCache;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.cache.SessionCache;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.event.EventHandler;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ public class JmComfessionWallBackendApplication {
 
         ConfigurableApplicationContext context = SpringApplication.run(JmComfessionWallBackendApplication.class, args);
         //初始化一堆缓存
+        Constant.eventHandler=new EventHandler();
         Constant.postCache = new PostCache();
         Constant.postCache.postMapper = context.getBean(PostMapper.class);
         Constant.postCache.init();

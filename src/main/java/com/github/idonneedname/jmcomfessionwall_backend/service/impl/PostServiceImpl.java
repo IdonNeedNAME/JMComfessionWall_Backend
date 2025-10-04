@@ -151,7 +151,7 @@ public class PostServiceImpl implements PostService {
         for(int i=0;i<posts.size();i++)
         {
             //泥马勒戈壁的JAVA连委托都没有
-            if(!posts.get(i).ispublic&&user_id!=posts.get(i).host)
+            if((!posts.get(i).ispublic||posts.get(i).anonymity)&&user_id!=posts.get(i).host)
             {
                 posts.remove(i);
                 i--;

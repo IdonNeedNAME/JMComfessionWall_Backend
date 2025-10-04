@@ -9,8 +9,9 @@ import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import java.util.ArrayList;
 
 public interface CommentService {
-    public AjaxResult<String> uploadComment(UploadCommentRequest req,String apiKey);
-    public AjaxResult<ArrayList<Comment>> getCommentsOfPost(GetCommentsOfPostRequest req, String apiKey);
-    public AjaxResult<Comment> getCommentInfo(GetCommentInfoRequest req, String apiKey);
-    public AjaxResult<String> commentLike(int userId, int commentId);
+    AjaxResult<String> uploadComment(UploadCommentRequest req,String apiKey);
+    AjaxResult<ArrayList<Comment>> getCommentsOfPost(GetCommentsOfPostRequest req, String apiKey);
+    AjaxResult<Comment> getCommentInfo(GetCommentInfoRequest req, String apiKey);
+    AjaxResult<String> commentLike(int userId, int commentId);
+    void commentDelete(int commentId,String apiKey);
 }

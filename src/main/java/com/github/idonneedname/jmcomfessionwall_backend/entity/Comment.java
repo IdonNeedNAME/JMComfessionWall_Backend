@@ -1,9 +1,6 @@
 package com.github.idonneedname.jmcomfessionwall_backend.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
@@ -39,6 +36,7 @@ public class Comment {
     public int host;
     public String content;
     public int depth;
+    @TableLogic
     public boolean hidden;
     @TableField(exist = false)
     public String hostname;

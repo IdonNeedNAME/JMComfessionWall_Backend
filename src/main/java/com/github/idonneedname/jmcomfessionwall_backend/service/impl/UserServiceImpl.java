@@ -111,37 +111,30 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public AjaxResult<String>  register(RegisterRequest req){
-           if(isUserNameValid(req.getUsername()))
-           {
-               if(isPassWordValid(req.getPassword()))
-               {
-                   if(isTypeValid(req))//判断是否可以是管理员，普通成员直接true
-                   {
-                        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-                        queryWrapper.eq("username",req.getUsername());
-                        User other = userMapper.selectOne(queryWrapper);
-                        if(other!=null)
-                        {
-                            throw new ApiException(NAME_TAKEN);
-                        }
-                        User user=new User();
-                        user.username=req.username;
-                        user.password=req.password;
-                        user.type=req.type;
-                        user.name=req.name;
-                        user.blacklist="[]";//初始化一下
-                        user.pictureref=-1;//无头像，默认为-1
-                        userMapper.insert(user);
-                        return AjaxResult.success();
-                   }
-                   else
-                       throw new ApiException(NOT_BELONG_TO_ADMIN);
-               }
-               else
-                   throw new ApiException(INVALID_PASSWORD);
-           }
-           return AjaxResult.fail(USERNAME_TOO_LONG);
+        if (!isUserNameValid(req.getUsername()))
+            return AjaxResult.fail(USERNAME_TOO_LONG);
+        if (req.getUsername()==null || req.getUsername().isEmpty())
+            return AjaxResult.fail(NULL_USERNAME);
+        if (!isPassWordValid(req.getPassword()))
+            throw new ApiException(INVALID_PASSWORD);
+        if (!isTypeValid(req))//判断是否可以是管理员，普通成员直接true
+            throw new ApiException(NOT_BELONG_TO_ADMIN);
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("username",req.getUsername());
+        User other = userMapper.selectOne(queryWrapper);
+        if(other!=null)
+            throw new ApiException(NAME_TAKEN);
+        User user=new User();
+        user.username=req.username;
+        user.password=req.password;
+        user.type=req.type;
+        user.name=req.name;
+        user.blacklist="[]";//初始化一下
+        user.pictureref=-1;//无头像，默认为-1
+        userMapper.insert(user);
+        return AjaxResult.success();
     }
+
     @Override
     public AjaxResult<String> amendName(AmendNameRequest req, String apiKey)
     {

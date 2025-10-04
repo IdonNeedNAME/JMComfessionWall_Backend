@@ -1,6 +1,5 @@
 package com.github.idonneedname.jmcomfessionwall_backend.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.idonneedname.jmcomfessionwall_backend.constant.Constant;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Comment;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
@@ -10,7 +9,6 @@ import com.github.idonneedname.jmcomfessionwall_backend.helper.ApiKeyHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.ArrayNodeHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.AssembleHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.event.CommentLikeEvent;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.event.PostLikeEvent;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.CommentMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.UserMapper;
@@ -70,9 +68,7 @@ public class CommentServiceImpl implements CommentService {
         }
         else
         {
-            QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("id",req.target_id);
-            Comment dad = commentMapper.selectOne(queryWrapper);
+            Comment dad = commentMapper.selectById(req.target_id);
             if(dad!=null)
             {
                 dad.subcomment= ArrayNodeHelper.add(dad.subcomment,comment.id);
@@ -81,7 +77,7 @@ public class CommentServiceImpl implements CommentService {
                 Post post= Constant.pushCache.getPost(dad.dadid);
                 post.comments++;
                 Constant.postCache.tryUpdate(post);
-                commentMapper.update(dad,queryWrapper);
+                commentMapper.updateById(comment);
             }
             else
                 throw new ApiException(COMMENT_NOT_FOUND);
@@ -92,9 +88,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public AjaxResult<ArrayList<Comment>> getCommentsOfPost(GetCommentsOfPostRequest req, String apiKey)
     {
-        QueryWrapper<Post> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",req.post_id);
-        Post post = postMapper.selectOne(queryWrapper);
+        Post post = postMapper.selectById(req.post_id);
         if(post==null)
             throw new ApiException(POST_NOT_FOUND);
         assembleHelper.assemble(post,req.user_id,true);
@@ -103,9 +97,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public AjaxResult<Comment> getCommentInfo(GetCommentInfoRequest req, String apiKey)
     {
-        QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",req.comment_id);
-        Comment comment = commentMapper.selectOne(queryWrapper);
+        Comment comment = commentMapper.selectById(req.comment_id);
         if(comment==null)
             throw new ApiException(COMMENT_NOT_FOUND);
         assembleHelper.assemble(comment,req.user_id);
@@ -114,12 +106,9 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public AjaxResult<String> commentLike(int userId,int commentId)
     {
-        QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",commentId);
-        Comment comment = commentMapper.selectOne(queryWrapper);
-        User user = userMapper.selectById(userId);
-        if (user==null)
-            throw new ApiException(USER_NOT_FOUND);
+        Comment comment = commentMapper.selectById(commentId);
+        if (comment==null)
+            throw new ApiException(COMMENT_NOT_FOUND);
         if(userId==comment.host)
             throw new ApiException(HOST_ADD_LIKE);
         CommentLikeEvent event=new CommentLikeEvent(Constant.eventHandler,userId,comment,commentMapper);
@@ -127,4 +116,14 @@ public class CommentServiceImpl implements CommentService {
         return AjaxResult.success();
     }
 
+    @Override
+    public void commentDelete(int commentId, String apiKey) {
+        int userId = apiKeyHelper.getUserId(apiKey);
+        Comment comment = commentMapper.selectById(commentId);
+        if (comment==null)
+            throw new ApiException(COMMENT_NOT_FOUND);
+        if(userId!=comment.host)
+            throw new ApiException(PERMISSION_NOT_ALLOWED);
+        commentMapper.deleteById(commentId);
+    }
 }

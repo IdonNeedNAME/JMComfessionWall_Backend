@@ -51,4 +51,9 @@ public class CommentController {
         int userId = apiKeyHelper.getUserId(api);
         return commentService.commentLike(userId,commentId);
     }
+    @DeleteMapping("/{commentId}")
+    public AjaxResult<String> commentD(@PathVariable int commentId,@RequestHeader("X-API-KEY") String api){
+        commentService.commentDelete(commentId,api);
+        return AjaxResult.success();
+    }
 }

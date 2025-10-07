@@ -21,7 +21,7 @@ public class PushCache {
     public UserMapper userMapper;
     public InfoPool<Integer> pool1,pool2;
     public int read=1;
-    public int maxOfPush=5;
+    public int maxOfPush=999;
     public float baseProbability=80;
     public boolean reversible,shouldSort=false;
     public PushCache(){
@@ -156,6 +156,9 @@ public class PushCache {
     }
     public static double getRecRate(Post post)
     {
+        if(Instant.now().toEpochMilli()-post.date<=36000000.0f)
+            return 5*(Math.log10(post.likes+3)+Math.log10(post.comments+3))/((Instant.now().toEpochMilli()-post.date)/(36000000.0f)+0.1f);
+            else
         return (Math.log10(post.likes+3)+Math.log10(post.comments+3))/((Instant.now().toEpochMilli()-post.date)/(36000000.0f)+0.1f);
     }
     //处理数据池
@@ -164,14 +167,15 @@ public class PushCache {
         reversible=false;
         InfoPool<Integer> tar=getWritePool();
         Set<Integer> keys = Constant.postCache.allId;
-       // StringHelper.log("keys "+keys.size());
+        StringHelper.log("keys "+keys.size());
         tar.pool.clear();
         tar.pool.addAll(keys);
         tar.pool.sort((p1, p2) -> {
         double weight1 = getRecRate(p1);
-        double weight2 = getRecRate(p2);
+        double weight2 = getRecRate(p2);      
         return Double.compare(weight2, weight1);
     });
+
 //        for(int i=0;i<tar.pool.size();i++)
 //        {
 //            if(Constant.postCache.tryFindById(tar.pool.get(i)).ispublic)

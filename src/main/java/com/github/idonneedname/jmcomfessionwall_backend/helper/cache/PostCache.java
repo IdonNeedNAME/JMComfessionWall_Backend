@@ -35,8 +35,8 @@ public class PostCache //帖子缓存，包含了删改读写，但直接读列�
         for(int i=0;i<post.size();i++)
         {
             posts.map.put(post.get(i).id, post.get(i));
-            if(post.get(i).ispublic) StringHelper.log("true "+post.get(i).id);
-            else StringHelper.log("false "+post.get(i).id);
+           // if(post.get(i).ispublic) StringHelper.log("true "+post.get(i).id);
+           // else StringHelper.log("false "+post.get(i).id);
             allId.add(post.get(i).id);
         }
     }
@@ -71,35 +71,21 @@ public class PostCache //帖子缓存，包含了删改读写，但直接读列�
         //待改进
     }
     //插入
-    @Transactional
+   // @Transactional
     public void tryInsert(Post post) {
         postMapper.insert(post);
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.registerSynchronization(
-                    new TransactionSynchronization() {
-                        @Override
-                        public void afterCommit() {
+
                             posts.map.put(post.id, post);
                             allId.add(post.id);
-                        }
-                    }
-            );
-        }
+                       //     StringHelper.log("enter");
     }
     //删除
-    @Transactional
+    //@Transactional
     public void tryDelete(Post post) {
         postMapper.deleteById(post);
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.registerSynchronization(
-                    new TransactionSynchronization() {
-                        @Override
-                        public void afterCommit() {
                             posts.map.remove(post.id);
                             allId.remove(post.id);
                         }
-                    }
-            );
-        }
-    }
+
+
 }

@@ -47,29 +47,21 @@ public class AssembleHelper {
         {
             user.portrait=new Picture();
             assemble(user.portrait,user.pictureref);
+            user.anonymousList=ArrayNodeHelper.translateToArray(user.anonymousposts);
         }
     }
     //配置帖子具体内容
     public void assemble(Post post, int visitor, boolean shouldInitialComments)//填-1表示没有
     {
+        post._host=post.getHost();
         //用户信息
         User user = userMapper.selectById(post.host);
         post.hostportrait=new Picture();
-        if(!post.anonymity&&user!=null)
-        {
-            assemble(post.hostportrait,user.pictureref);
-            post.hostname=user.name;
-        }
-        else
-        {
-            assemble(post.hostportrait,-1);
-            post.hostname="UnknownName";
-        }
         //点赞
         ArrayList<Integer> like= ArrayNodeHelper.translateToArray(post.likelist);
         if(like!=null)
         {
-            post.likes=like.size();
+            //post.likes=like.size();
             post.liked=false;
             if(visitor!=-1)
             {
@@ -115,6 +107,28 @@ public class AssembleHelper {
                 }
 
             }
+        if(post.host!=visitor)
+        {
+            post._anonymity=false;
+            post._ispublic=false;
+        }
+        else
+        {
+            post._anonymity=post.anonymity;
+            post._ispublic=post.ispublic;
+        }
+        if(!post.anonymity&&user!=null)
+        {
+            assemble(post.hostportrait,user.pictureref);
+            post.hostname=user.name;
+        }
+        else
+        {
+            assemble(post.hostportrait,-1);
+            post.hostname="UnknownName";
+            if(post.host!=visitor)
+                post._host=11;
+        }
     }
     //配置评论信息具体内容
     public void assemble(Comment comment,int visitor)

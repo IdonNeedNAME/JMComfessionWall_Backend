@@ -39,4 +39,9 @@ public class User {
     public int pictureref;//头像的id
     @TableField(exist=false)
     public  Picture portrait;//头像信息
+    @JsonIgnore
+    public String anonymousposts;
+    @JsonProperty("anonymityList")
+    @TableField(exist=false)
+    public ArrayList<Integer> anonymousList;
 }

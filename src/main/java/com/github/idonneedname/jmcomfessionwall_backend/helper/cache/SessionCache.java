@@ -1,5 +1,7 @@
 package com.github.idonneedname.jmcomfessionwall_backend.helper.cache;
 
+import com.github.idonneedname.jmcomfessionwall_backend.helper.StringHelper;
+
 import java.util.ArrayList;
 //用户数据缓存
 public class SessionCache {
@@ -17,5 +19,9 @@ public class SessionCache {
         Session session=new Session(userId);
         sessions.pool.add(session);
         return session;
+    }
+    public void resetCache(int id) {
+        Session s=userSession(id);
+        s.hadVisited.clear();
     }
 }

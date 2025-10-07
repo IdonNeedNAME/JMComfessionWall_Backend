@@ -2,6 +2,7 @@ package com.github.idonneedname.jmcomfessionwall_backend.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.idonneedname.jmcomfessionwall_backend.constant.ExceptionEnum;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,7 @@ public class Comment {
     }
 
     @TableId(type = IdType.AUTO)
+    @JsonProperty("commentId")
     public int id;
     public int host;
     public String content;

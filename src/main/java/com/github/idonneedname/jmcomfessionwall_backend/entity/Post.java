@@ -3,6 +3,7 @@ package com.github.idonneedname.jmcomfessionwall_backend.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,8 +37,13 @@ public class Post {
     }
 
     @TableId(type= IdType.AUTO)
+    @JsonProperty("postId")
     public int id;
+    @JsonIgnore
     public int host;
+    @TableField(exist=false)
+    @JsonProperty("host")
+    public int _host;
     @JsonIgnore
     public long date;
     public String title;
@@ -45,10 +51,16 @@ public class Post {
     public int depth;
     @JsonIgnore
     public boolean anonymity;
+    @TableField(exist=false)
+    @JsonProperty("anonymity")
+    public boolean _anonymity;
     @TableLogic
     public boolean hidden;
     @JsonIgnore
     public boolean ispublic;
+    @TableField(exist=false)
+    @JsonProperty("ispublic")
+    public boolean _ispublic;
     //下面三个实质是个存放id的List，用ArrayNodeHelper里的方法操作
     @JsonIgnore
     public String likelist;//点赞人列表

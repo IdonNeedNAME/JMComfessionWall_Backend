@@ -1,14 +1,18 @@
 package com.github.idonneedname.jmcomfessionwall_backend.controler;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.idonneedname.jmcomfessionwall_backend.Response.UserInfoResponse;
 import com.github.idonneedname.jmcomfessionwall_backend.constant.Constant;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Comment;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
+import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.ApiKeyHelper;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.ArrayNodeHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.AssembleHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.CommentMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;
+import com.github.idonneedname.jmcomfessionwall_backend.mapper.UserMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.request.RegAndLog.LoginRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.RegAndLog.RegisterRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.request.user.AmendNameRequest;
@@ -43,6 +47,8 @@ public class UserController {
     private AssembleHelper assembleHelper;
     @Resource
     private CommentMapper commentMapper;
+    @Autowired
+    private UserMapper userMapper;
 
     @PostMapping("/register")
     public AjaxResult<String> register(@RequestBody RegisterRequest req){
@@ -83,9 +89,9 @@ public class UserController {
     public AjaxResult<List<Post>> getPostsOfUser(@PathVariable("userId") int userId, @RequestHeader("X-API-KEY") String api){
         return postService.getPostOfUser(userId,api);
     }
-    @GetMapping("/black")
-    public AjaxResult<List<Integer>> getBlackList(@RequestHeader("X-API-KEY") String api){
-        return userService.getBlackList(api);
+    @GetMapping("/{userId}/black")
+    public AjaxResult<List<Integer>> getBlackList(@PathVariable int userId,@RequestHeader("X-API-KEY") String api){
+        return userService.getBlackList(userId,api);
     }
     @PostMapping("/pic/{id}")//不用管跑测试用的
     public AjaxResult<String> fuckyouJAVA(@PathVariable int id,@RequestHeader("X-API-KEY") String api){
@@ -93,5 +99,12 @@ public class UserController {
          post.likes+=999;
          Constant.postCache.tryUpdate(post);
         return AjaxResult.success("ssss");
+    }
+    @GetMapping("/{userId}/anonymityList")
+    public AjaxResult<List<Integer>> getAnonymity(@PathVariable int userId, @RequestHeader("X-API-KEY") String api)
+    {
+        apiKeyHelper.getUserId(api);
+        User user=userMapper.selectById(userId);
+        return AjaxResult.success(ArrayNodeHelper.translateToArray(user.anonymousposts));
     }
 }

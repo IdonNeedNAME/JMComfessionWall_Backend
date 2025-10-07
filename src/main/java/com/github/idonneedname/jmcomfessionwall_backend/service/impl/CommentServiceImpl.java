@@ -73,11 +73,11 @@ public class CommentServiceImpl implements CommentService {
             {
                 dad.subcomment= ArrayNodeHelper.add(dad.subcomment,comment.id);
                 comment.depth=dad.depth+1;
-                comment.comments++;
+                dad.comments++;
                 Post post= Constant.pushCache.getPost(dad.dadid);
                 post.comments++;
                 Constant.postCache.tryUpdate(post);
-                commentMapper.updateById(comment);
+                commentMapper.updateById(dad);
             }
             else
                 throw new ApiException(COMMENT_NOT_FOUND);

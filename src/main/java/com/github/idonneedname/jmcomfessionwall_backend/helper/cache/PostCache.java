@@ -1,7 +1,9 @@
 package com.github.idonneedname.jmcomfessionwall_backend.helper.cache;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.StringHelper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;
+import net.sf.jsqlparser.expression.StringValue;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -33,6 +35,8 @@ public class PostCache //帖子缓存，包含了删改读写，但直接读列�
         for(int i=0;i<post.size();i++)
         {
             posts.map.put(post.get(i).id, post.get(i));
+            if(post.get(i).ispublic) StringHelper.log("true "+post.get(i).id);
+            else StringHelper.log("false "+post.get(i).id);
             allId.add(post.get(i).id);
         }
     }

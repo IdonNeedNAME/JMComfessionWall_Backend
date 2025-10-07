@@ -1,20 +1,28 @@
 package com.github.idonneedname.jmcomfessionwall_backend.helper.event;
 
-import java.util.LinkedList;
-import java.util.List;
+import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
+
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 //事件处理器，用于把并发事件排队解决来解决并发冲突，性能问题待改进
 public class EventHandler {
     public EventHandler() {
         eventQue=new LinkedList<>();
+        idUpdated =new HashSet<>();
     }
+    public Set<Post> idUpdated;
+    public boolean haveUpdateEvent;
     public List<IResolvable> eventQue;
     public boolean resolving=false;
     //提醒更新
     public void notifyStart()
     {
          if(resolving) return ;
-         else ResolveEvents();
+         else
+         {
+             CompletableFuture.runAsync(this::ResolveEvents);
+         }
     }
     public void notifyEventEnd(){
 

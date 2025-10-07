@@ -34,6 +34,7 @@ public enum ExceptionEnum {
     TITLE_TOO_LONG(2005, "标题内容过长"),
     PICTURE_TOO_LONG(2006, "图片上限九张"),
     NULL_TITLE(1010,"标题不能为空"),
+    INVAILD_TYPE_PICTURE(2007,"不支持的图片类型"),
     NULL_CONTENT(1010,"内容不能为空"),
     ORIGINAL_PASSWORD_ERROR(1011,"原密码错误"),
 
@@ -44,6 +45,7 @@ public enum ExceptionEnum {
 
     //服务器
     SERVER_BUSY(3001,"服务器繁忙"),
+
 
     //举报
     REPORT_NOT_FOUND(3001,"举报不存在"),

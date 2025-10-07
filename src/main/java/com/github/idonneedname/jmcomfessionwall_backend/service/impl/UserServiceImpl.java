@@ -3,8 +3,10 @@ package com.github.idonneedname.jmcomfessionwall_backend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.idonneedname.jmcomfessionwall_backend.Response.UserInfoResponse;
+import com.github.idonneedname.jmcomfessionwall_backend.constant.Constant;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.AdminWhiteList;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.ApiKey;
+import com.github.idonneedname.jmcomfessionwall_backend.entity.Picture;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.*;
@@ -60,6 +62,8 @@ public class UserServiceImpl implements UserService {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("username",req.getUsername()).eq("password",req.getPassword());
         User user = userMapper.selectOne(queryWrapper);
+        log.info(req.username);
+        log.info(req.password);
         if(user==null){
             throw new ApiException(WRONG_USERNAME_OR_PASSWORD);
         }
@@ -78,6 +82,7 @@ public class UserServiceImpl implements UserService {
                 apiKeyMapper.updateById(apiKey);
             }
             response.setMsg(api);
+            Constant.sessionCache.resetCache(user.id);
             return response;
         }
     }
@@ -130,6 +135,7 @@ public class UserServiceImpl implements UserService {
         user.type=req.type;
         user.name=req.name;
         user.blacklist="[]";//初始化一下
+        user.anonymousposts="[]";
         user.pictureref=-1;//无头像，默认为-1
         userMapper.insert(user);
         return AjaxResult.success();
@@ -138,6 +144,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public AjaxResult<String> amendName(AmendNameRequest req, String apiKey)
     {
+        log.info(req.getNewname());
         int user_id= apiKeyHelper.getUserId(apiKey);
         if(isUserNameValid(req.getNewname()))
         {
@@ -171,6 +178,7 @@ public class UserServiceImpl implements UserService {
         int user_id=apiKeyHelper.getUserId(apiKey);
         log.info("user_id:"+user_id);
         User user = userMapper.selectById(target_id);
+        log.info("tar:"+target_id);
         if(user==null)
             throw new ApiException(USER_NOT_FOUND);
         else
@@ -192,7 +200,9 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.selectById(user_id);
         user.pictureref=pictureHelper.storePicture(req.getPicture());
         userMapper.updateById(user);
-        return AjaxResult.success();
+        Picture pic=new Picture();
+        assembleHelper.assemble(pic,user.pictureref);
+        return AjaxResult.success(pic.url);
     }
     @Override
     public AjaxResult<String> addBlackList(BlackListRequest req, String apiKey)
@@ -227,9 +237,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AjaxResult<List<Integer>> getBlackList(String apiKey) {
+    public AjaxResult<List<Integer>> getBlackList(int userId,String apiKey) {
         int user_id= apiKeyHelper.getUserId(apiKey);
-        User user = userMapper.selectById(user_id);
+        User user2 = userMapper.selectById(user_id);
+        if(userId!=user_id&&user2.type!=2)
+        {
+            throw new ApiException(PERMISSION_NOT_ALLOWED);
+        }
+        User user = userMapper.selectById(userId);
         return AjaxResult.success(translateToArray(user.blacklist));
     }
 

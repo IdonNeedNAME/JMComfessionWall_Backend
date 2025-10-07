@@ -7,11 +7,9 @@ import com.github.idonneedname.jmcomfessionwall_backend.constant.Constant;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.Post;
 import com.github.idonneedname.jmcomfessionwall_backend.entity.User;
 import com.github.idonneedname.jmcomfessionwall_backend.exception.ApiException;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.ApiKeyHelper;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.AssembleHelper;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.PictureHelper;
-import com.github.idonneedname.jmcomfessionwall_backend.helper.StringHelper;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.*;
 import com.github.idonneedname.jmcomfessionwall_backend.helper.event.PostLikeEvent;
+import com.github.idonneedname.jmcomfessionwall_backend.helper.event.UpdateToDBEvent;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PictureMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.PostMapper;
 import com.github.idonneedname.jmcomfessionwall_backend.mapper.UserMapper;
@@ -20,9 +18,11 @@ import com.github.idonneedname.jmcomfessionwall_backend.request.post.UpdatePostR
 import com.github.idonneedname.jmcomfessionwall_backend.request.post.UploadPostRequest;
 import com.github.idonneedname.jmcomfessionwall_backend.result.AjaxResult;
 import com.github.idonneedname.jmcomfessionwall_backend.service.PostService;
+import com.github.idonneedname.jmcomfessionwall_backend.service.UserService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,11 +44,15 @@ public class PostServiceImpl implements PostService {
     @Resource
     private PictureMapper pictureMapper;
     @Resource
+    private ArrayNodeHelper arrayNodeHelper;
+    @Resource
     private AssembleHelper  assembleHelper;
     @Resource
     private ApiKeyHelper apiKeyHelper;
     @Resource
     private UserMapper userMapper;
+    @Autowired
+    private UserService userService;
 
     //检查修改时可能存在的一些问题
     public void throwAmendQuestion(Post post,int user_id){
@@ -128,13 +132,23 @@ public class PostServiceImpl implements PostService {
             post.host=req.user_id;
             post.depth=1;
             post.hidden=false;
-            post.ispublic=req.ispublic;
+            post.ispublic=req.getIsPublic();
             post.anonymity=req.anonymity;
             post.likelist="[]";
             post.subcomment="[]";
             post.picture=getPicture(req.pictures);
             post.date= Instant.now().toEpochMilli();
-            postMapper.insert(post);
+            User user=userMapper.selectById(post.host);
+            if(post.anonymity)
+            {
+                user.anonymousposts=ArrayNodeHelper.add(user.anonymousposts, post.id);
+            }
+            else
+            {
+                user.anonymousposts=ArrayNodeHelper.delete(user.anonymousposts, post.id);
+            }
+            Constant.postCache.tryInsert(post);
+            userMapper.updateById(user);
             return AjaxResult.success(null);
         }
         return  AjaxResult.fail(null);
@@ -164,9 +178,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public AjaxResult<Post> getPostInfo(GetPostInfoRequest req, String apiKey)
     {
-        QueryWrapper<Post> queryWrapper=new QueryWrapper<>();
-        queryWrapper.eq("id",req.post_id);
-        Post post=postMapper.selectOne(queryWrapper);
+        Post post=Constant.postCache.tryFindById(req.post_id);
         if(post==null)
             throw new ApiException(POST_NOT_FOUND);
         if((!post.ispublic&&req.user_id!=post.host))
@@ -185,7 +197,17 @@ public class PostServiceImpl implements PostService {
             post.content=req.getNewContent();
             post.picture=getPicture(req.pictures);
             post.anonymity=req.isAnonymity();
-            post.ispublic=req.isPublic();
+            User user=userMapper.selectById(post.host);
+            if(post.anonymity)
+            {
+                user.anonymousposts=ArrayNodeHelper.add(user.anonymousposts, post.id);
+            }
+            else
+            {
+                user.anonymousposts=ArrayNodeHelper.delete(user.anonymousposts, post.id);
+            }
+            post.ispublic=req.getIsPublic();
+            userMapper.updateById(user);
             Constant.postCache.tryUpdate(post);
         }
     }
@@ -199,11 +221,13 @@ public class PostServiceImpl implements PostService {
         inBlackList(post,user_id);
         StringHelper.log(user_id);
         StringHelper.log(post.host);
-        if(user_id==post.host)
-            throw new ApiException(HOST_ADD_LIKE);
+        //if(user_id==post.host)
+          //  throw new ApiException(HOST_ADD_LIKE);
         log.info("user");
         PostLikeEvent event=new PostLikeEvent(Constant.eventHandler,user_id,post_id);
+        UpdateToDBEvent updateToDBEvent=new UpdateToDBEvent(Constant.eventHandler);
         Constant.eventHandler.addEvent(event);
+        updateToDBEvent.addIntoHandler();
         //事件处理器已经自动update了
     }
 

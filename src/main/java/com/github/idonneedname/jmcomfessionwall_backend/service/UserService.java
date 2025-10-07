@@ -21,5 +21,5 @@ public interface UserService {
     AjaxResult<String> uploadPortrait(UploadPortraitRequest req, String apiKey);
     AjaxResult<String> addBlackList(BlackListRequest req, String apiKey);
     AjaxResult<String> deleteBlackList(BlackListRequest req, String apiKey);
-    AjaxResult<List<Integer>> getBlackList(String apiKey);
+    AjaxResult<List<Integer>> getBlackList(int userId,String apiKey);
 }

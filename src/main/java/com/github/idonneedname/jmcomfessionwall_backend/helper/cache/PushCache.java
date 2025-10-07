@@ -54,6 +54,7 @@ public class PushCache {
     }
     public Post getPost(int id)
     {
+
         return Constant.postCache.tryFindById(id);
     }
     public boolean isValidPost(int postId, int userId)
@@ -65,12 +66,17 @@ public class PushCache {
     public boolean isValidPost(Post post, int userId)
     {
         if(post.hidden) return false;
-        if(!post.ispublic&&userId!=post.host)
+      //  log.info("a1");
+      //  if(post.ispublic) StringHelper.log("true "+post.id);
+      //  else StringHelper.log("false "+post.id);
+        if(!post.ispublic)
             return false;
         QueryWrapper<User> wrapper=new QueryWrapper<>();
         wrapper.eq("id",post.host);
         User user=userMapper.selectOne(wrapper);
+      //  log.info("a2");
         if(user==null) return true;
+       // log.info("a3");
         if(ArrayNodeHelper.idInArray(user.blacklist,userId)!=-1)
             return false;
         return true;
@@ -90,17 +96,21 @@ public class PushCache {
             int p=0;
             while(selectedTemp.size()<maxOfPush&&p<pool.pool.size())
             {
-                log.info("P: "+p);
+                log.info("ID: "+pool.pool.get(p));
                 Post post=getPost(pool.pool.get(p));
                 if(!isValidPost(post,id))
                 {
+                   // log.info("INVALID "+p);
                     p++;
                     continue;
                 }
 
                 if(session.userHasVisited(pool.pool.get(p)))
                 {
-                        availableTemp.add(post);
+                    //p++;
+                    //continue;
+                     availableTemp.add(post);
+                    //如果你看到这行字，说明我对接完要去炫饭了
                 }
                 else
                 {
@@ -162,6 +172,13 @@ public class PushCache {
         double weight2 = getRecRate(p2);
         return Double.compare(weight2, weight1);
     });
+//        for(int i=0;i<tar.pool.size();i++)
+//        {
+//            if(Constant.postCache.tryFindById(tar.pool.get(i)).ispublic)
+//                StringHelper.log("true "+tar.pool.get(i));
+//            else
+//                StringHelper.log("false "+tar.pool.get(i));
+//        }
         reversible=true;
     }
 }

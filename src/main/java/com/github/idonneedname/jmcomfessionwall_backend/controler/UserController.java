@@ -81,8 +81,9 @@ public class UserController {
     public AjaxResult<UserInfoResponse> getUserInfo(@PathVariable("id") int id, @RequestHeader("X-API-KEY") String api){
         return userService.getUserInformation(id,api);
     }
-    @DeleteMapping("/deblacklist")
+    @PostMapping("/deblacklist")
     public AjaxResult<String> deleteBlacklist(@RequestBody BlackListRequest req, @RequestHeader("X-API-KEY") String api){
+        log.info("enter");
         return userService.deleteBlackList(req,api);
     }
     @GetMapping("/{userId}/posts")

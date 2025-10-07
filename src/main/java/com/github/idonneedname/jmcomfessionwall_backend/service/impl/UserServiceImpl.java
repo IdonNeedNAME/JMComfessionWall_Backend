@@ -213,9 +213,12 @@ public class UserServiceImpl implements UserService {
         User blacklistedUser=userMapper.selectById(req.getTarget_id());
         if(blacklistedUser==null)
             throw new ApiException(USER_NOT_FOUND);
+
         User user = userMapper.selectById(user_id);
         if(user.blacklist==null)
             user.blacklist="[]";
+        if(idInArray(user.blacklist,req.getTarget_id())!=-1)
+            throw new ApiException(HAS_BEEN_IN_BLACKLIST);
         user.blacklist=ArrayNodeHelper.add(user.blacklist,req.getTarget_id());
         userMapper.updateById(user);
         return AjaxResult.success();

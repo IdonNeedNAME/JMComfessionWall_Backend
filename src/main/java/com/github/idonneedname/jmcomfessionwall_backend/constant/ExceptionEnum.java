@@ -25,6 +25,7 @@ public enum ExceptionEnum {
     MEIDIQI(1013,"不能拉黑自己"),
     IS_NOT_IN_BLACKLIST(1014,"该用户不在黑名单内"),
     LOGIN_EXPIRED(1015,"登录失效"),
+    HAS_BEEN_IN_BLACKLIST(1016,"已经在黑名单中"),
     //post类错误
     HOST_ADD_LIKE(2000,"知道你很喜欢你的帖子了，不要再点了啦"),
     POST_NOT_FOUND(1002, "帖子不存在"),
